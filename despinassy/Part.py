@@ -2,6 +2,9 @@ from despinassy.db import db
 
 class Part(db.Model):
     __tablename__ = 'part'
+    __table_args__ = (
+        db.UniqueConstraint('barcode'),
+    )
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     barcode = db.Column(db.String(120))
     name = db.Column(db.String(50))
