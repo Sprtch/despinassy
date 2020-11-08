@@ -35,7 +35,7 @@ class Despinassy(SQLAlchemy):
             model_class=Model,
         )
 
-    def init_app(self, app=None, config=None):
+    def init_app(self, app=None, config={}):
         if app is None:
             app = NO_APP(config)
             self.app = app
