@@ -13,13 +13,15 @@ class NO_APP:
         'sqlalchemy': None,
     }
     config = {
-        'SQLALCHEMY_DATABASE_URI': 'sqlite:///../huron/database.db'
+        'SQLALCHEMY_DATABASE_URI': None,
+        'SQLALCHEMY_TRACK_MODIFICATIONS': False,
     }
     root_path=''
 
-    def __init__(self):
+    def __init__(self, config={}):
         self.teardown_appcontext_funcs = []
-        self.debug = False
+        self.debug = config.setdefault('debug', False)
+        NO_APP.config['SQLALCHEMY_DATABASE_URI'] = config.setdefault('uri', 'sqlite:///../huron/database.db')
 
     @setupmethod
     def teardown_appcontext(self, f):
@@ -33,9 +35,9 @@ class Despinassy(SQLAlchemy):
             model_class=Model,
         )
 
-    def init_app(self, app=None):
+    def init_app(self, app=None, config=None):
         if app is None:
-            app = NO_APP()
+            app = NO_APP(config)
             self.app = app
             super().init_app(app)
         else:
