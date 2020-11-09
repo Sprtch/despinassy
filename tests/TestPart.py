@@ -11,7 +11,7 @@ class TestDatabase(unittest.TestCase):
         db.create_all()
 
     def test_part_creation(self):
-        p = Part("BARCODE", "QWERTY1234")
+        p = Part(name="BARCODE", barcode="QWERTY1234")
         db.session.add(p)
         db.session.commit()
         self.assertEqual(Part.query.count(), 1)
@@ -24,7 +24,7 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(p.counter, 0)
 
     def test_part_unique(self):
-        p = Part("BARCODE2", "QWERTY1234")
+        p = Part(name="BARCODE2", barcode="QWERTY1234")
         db.session.add(p)
         self.assertRaises(sqlalchemy.exc.IntegrityError, db.session.commit)
 
