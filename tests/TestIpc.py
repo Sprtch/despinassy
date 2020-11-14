@@ -3,12 +3,35 @@ from despinassy.ipc import IpcPrintMessage, ipc_create_print_message, redis_subs
 from collections import namedtuple
 
 class TestRedis(unittest.TestCase):
-    def test_msg_cast(self):
+    def test_msg_cast1(self):
         TestMessage = namedtuple('PrintMessage', 'barcode, origin, redis, name')
         msg = TestMessage(barcode="1234", origin="here", redis="redis", name="1234")
         a = ipc_create_print_message(msg)
 
         self.assertTrue(isinstance(a, IpcPrintMessage))
+        self.assertEqual(a.barcode, "1234")
+        self.assertEqual(a.origin, "here")
+        self.assertEqual(a.name, "1234")
+
+    def test_msg_cast2(self):
+        TestMessage = namedtuple('PrintMessage', 'barcode, origin, redis, name')
+        msg = TestMessage(barcode="1234", origin="here", redis="redis", name="1234")
+        a = ipc_create_print_message(msg, name="New Name")
+
+        self.assertTrue(isinstance(a, IpcPrintMessage))
+        self.assertEqual(a.barcode, "1234")
+        self.assertEqual(a.origin, "here")
+        self.assertEqual(a.name, "New Name")
+
+    def test_msg_cast3(self):
+        TestMessage = namedtuple('PrintMessage', 'barcode, origin, redis, name')
+        msg = dict(barcode="1234", origin="here", redis="redis", name="1234")
+        a = ipc_create_print_message(msg)
+
+        self.assertTrue(isinstance(a, IpcPrintMessage))
+        self.assertEqual(a.barcode, "1234")
+        self.assertEqual(a.origin, "here")
+        self.assertEqual(a.name, "1234")
 
 if __name__ == '__main__':
     unittest.main()
