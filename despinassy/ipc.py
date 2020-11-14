@@ -4,7 +4,7 @@ IpcPrintMessage = namedtuple('PrintMessage', 'barcode, origin, name')
 
 def ipc_create_print_message(instance):
     msg_dict = {}
-    for f in RedisPrintMessage._fields:
+    for f in IpcPrintMessage._fields:
         if hasattr(instance, f):
             msg_dict[f] = getattr(instance, f)
         else:
