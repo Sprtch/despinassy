@@ -10,7 +10,7 @@ def ipc_create_print_message(instance):
         else:
             msg_dict[f] = None
 
-    return RedisPrintMessage(**msg_dict)
+    return IpcPrintMessage(**msg_dict)
 
 def redis_subscribers_num(redis, channel):
     return redis.execute_command('PUBSUB', 'NUMSUB', channel)[1]
