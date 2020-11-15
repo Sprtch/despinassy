@@ -12,6 +12,7 @@ class TestRedis(unittest.TestCase):
         self.assertEqual(a.barcode, "1234")
         self.assertEqual(a.origin, "here")
         self.assertEqual(a.name, "1234")
+        self.assertEqual(a.number, 1)
 
     def test_msg_cast2(self):
         TestMessage = namedtuple('PrintMessage', 'barcode, origin, redis, name')
@@ -22,6 +23,7 @@ class TestRedis(unittest.TestCase):
         self.assertEqual(a.barcode, "1234")
         self.assertEqual(a.origin, "here")
         self.assertEqual(a.name, "New Name")
+        self.assertEqual(a.number, 1)
 
     def test_msg_cast3(self):
         TestMessage = namedtuple('PrintMessage', 'barcode, origin, redis, name')
@@ -32,6 +34,7 @@ class TestRedis(unittest.TestCase):
         self.assertEqual(a.barcode, "1234")
         self.assertEqual(a.origin, "here")
         self.assertEqual(a.name, "1234")
+        self.assertEqual(a.number, 1)
 
     def test_msg_cast4(self):
         msg = IpcPrintMessage(barcode="hello")
@@ -40,6 +43,7 @@ class TestRedis(unittest.TestCase):
         self.assertEqual(msg.barcode, "hello")
         self.assertEqual(msg.origin, None)
         self.assertEqual(msg.name, '')
+        self.assertEqual(msg.number, 1)
 
 if __name__ == '__main__':
     unittest.main()
