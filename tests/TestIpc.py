@@ -33,5 +33,13 @@ class TestRedis(unittest.TestCase):
         self.assertEqual(a.origin, "here")
         self.assertEqual(a.name, "1234")
 
+    def test_msg_cast4(self):
+        msg = IpcPrintMessage(barcode="hello")
+
+        self.assertTrue(isinstance(msg, IpcPrintMessage))
+        self.assertEqual(msg.barcode, "hello")
+        self.assertEqual(msg.origin, None)
+        self.assertEqual(msg.name, '')
+
 if __name__ == '__main__':
     unittest.main()

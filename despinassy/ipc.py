@@ -1,20 +1,20 @@
 from collections import namedtuple
 
-IpcPrintMessage = namedtuple('PrintMessage', 'barcode, origin, name')
+IpcPrintMessage = namedtuple('PrintMessage', 'barcode, origin, name', defaults=(None, None, ''))
 
 def create_nametuple(target, instance, **kwargs):
     msg_dict = {}
     if isinstance(instance, dict):
         for f in target._fields:
-            if instance.get(f) is not None:
+            if f in instance:
                 msg_dict[f] = kwargs.get(f) or instance[f]
-            else:
+            elif f in kwargs:
                 msg_dict[f] = kwargs.get(f)
     else:
         for f in target._fields:
             if hasattr(instance, f):
                 msg_dict[f] = kwargs.get(f) or getattr(instance, f)
-            else:
+            elif f in kwargs:
                 msg_dict[f] = kwargs.get(f)
 
     return target(**msg_dict)
