@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-IpcPrintMessage = namedtuple('PrintMessage', 'barcode, origin, name', defaults=(None, None, ''))
+IpcPrintMessage = namedtuple('PrintMessage', 'barcode, origin, name, number', defaults=(None, None, '', 1))
 
 def create_nametuple(target, instance, **kwargs):
     msg_dict = {}
