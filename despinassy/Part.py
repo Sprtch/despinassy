@@ -1,5 +1,6 @@
 from despinassy.db import db
 from sqlalchemy.orm import relationship, backref
+import csv
 
 class Part(db.Model):
     __tablename__ = 'part'
@@ -23,3 +24,24 @@ class Part(db.Model):
             'name': self.name,
             'counter': self.counter,
         }
+
+    @staticmethod
+    def import_csv(filename):
+        csv_map = {
+            "barcode": "barcode",
+            "default_code": "name",
+        }
+        with open(filename, mode="r", encoding="ISO-8859-1", errors='ignore') as csv_file:
+            csv_reader = csv.DictReader(csv_file, delimiter=",")
+            Part.query.delete() # Completely remove every entry in Part.
+            for i, row in enumerate(csv_reader):
+                if i > 0 and all([row[x] for x in csv_map.keys()]):
+                    args = {}
+                    for x in csv_map.keys():
+                        args[csv_map[x]] = row[x]
+
+                    db.session.add(Part(**args))
+                    try:
+                        db.session.commit()
+                    except:
+                        db.session.rollback()
