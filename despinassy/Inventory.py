@@ -1,5 +1,6 @@
 from despinassy.db import db
 from sqlalchemy.orm import relationship, backref
+import csv
 
 class Inventory(db.Model):
     __tablename__ = 'inventory'
@@ -21,3 +22,7 @@ class Inventory(db.Model):
             'part': self.part.to_dict(),
             'counter': self.counter,
         }
+
+    @staticmethod
+    def export_csv():
+        pass # TODO
