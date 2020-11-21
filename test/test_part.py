@@ -8,6 +8,7 @@ class TestDatabasePart(unittest.TestCase):
         db.init_app(config={
             'uri': 'sqlite://',
         })
+        db.drop_all()
         db.create_all()
 
     @classmethod
