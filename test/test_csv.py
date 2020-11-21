@@ -70,5 +70,14 @@ class TestCsv(unittest.TestCase):
         p = Part.query.filter(Part.barcode == "world")
         self.assertEqual(p.count(), 0)
 
+    def test_csv_import_4(self):
+        """
+        Test the import of file with empty field that should be passed
+        """
+        self.assertEqual(Part.query.count(), 0)
+        csv = io.StringIO("name,barcode\nhello,world\nfoo,\n,456\n,433,\nfoo,bar\n")
+        Part._import_csv_content(csv)
+        self.assertEqual(Part.query.count(), 2)
+
 if __name__ == '__main__':
     unittest.main()

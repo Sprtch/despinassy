@@ -8,9 +8,12 @@ import os
 
 class Part(db.Model):
     __tablename__ = 'part'
+    __table_args__ = (
+        db.UniqueConstraint('barcode', 'name', name='_barcode_name_uc'),
+   )
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    barcode = db.Column(db.String(120), index=True, unique=True)
+    barcode = db.Column(db.String(120), index=True)
     name = db.Column(db.String(50))
     counter = db.Column(db.Integer, default=0)
     inventories = relationship('Inventory', back_populates='part')
@@ -47,7 +50,12 @@ class Part(db.Model):
             args = {}
             for x in csv_map.keys():
                 args[csv_map[x]] = row[x]
-            parts.append(args)
+
+            if all([args[x] for x in args]):
+                parts.append(args)
+            else:
+                # Do not import row with empty fields
+                continue
 
         db.session.bulk_insert_mappings(Part, parts)
 
