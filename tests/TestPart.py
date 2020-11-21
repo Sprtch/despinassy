@@ -2,12 +2,12 @@ import unittest
 from despinassy import db, Part, Inventory
 import sqlalchemy
 
-class TestDatabase(unittest.TestCase):
-    def setUp(self):
+class TestDatabasePart(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
         db.init_app(config={
             'uri': 'sqlite://',
         })
-        db.drop_all()
         db.create_all()
 
     def test_part_creation(self):
