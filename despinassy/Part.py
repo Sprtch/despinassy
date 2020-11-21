@@ -40,16 +40,15 @@ class Part(db.Model):
         
         Part.query.delete() # Completely remove every entry in Part.
         for i, row in enumerate(csv_reader):
-            if i > 0 and all([row[x] for x in csv_map.keys()]):
-                args = {}
-                for x in csv_map.keys():
-                    args[csv_map[x]] = row[x]
+            args = {}
+            for x in csv_map.keys():
+                args[csv_map[x]] = row[x]
 
-                db.session.add(Part(**args))
-                try:
-                    db.session.commit()
-                except:
-                    db.session.rollback()
+            db.session.add(Part(**args))
+            try:
+                db.session.commit()
+            except:
+                db.session.rollback()
 
     @staticmethod
     def import_csv(filename, csv_map=None):
