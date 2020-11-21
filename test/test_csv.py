@@ -4,7 +4,7 @@ import sqlalchemy
 import io
 import uuid
 
-class TestDatabase(unittest.TestCase):
+class TestCsv(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         db.init_app(config={
@@ -55,6 +55,20 @@ class TestDatabase(unittest.TestCase):
         p = Part.query.filter(Part.barcode == "456").first()
         self.assertEqual(p.name, "123")
         self.assertEqual(p.barcode, "456")
+
+    def test_csv_import_3(self):
+        """
+        Test the import doesn't fail when importing the same data and erase the data
+        """
+        self.assertEqual(Part.query.count(), 0)
+        csv_content = "name,barcode\nhello,world\nfoo,bar\n123,456\n"
+        Part._import_csv_content(io.StringIO(csv_content))
+        self.assertEqual(Part.query.count(), 3)
+        csv_content = "name,barcode\nfoo,bar\n123,456\nfoo2,bar2\n324,561\n"
+        Part._import_csv_content(io.StringIO(csv_content))
+        self.assertEqual(Part.query.count(), 4)
+        p = Part.query.filter(Part.barcode == "world")
+        self.assertEqual(p.count(), 0)
 
 if __name__ == '__main__':
     unittest.main()
