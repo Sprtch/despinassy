@@ -55,6 +55,7 @@ class Part(db.Model):
                 continue
 
         db.session.bulk_insert_mappings(Part, parts)
+        db.session.commit()
 
     @staticmethod
     def import_csv(filename, csv_map=None):
