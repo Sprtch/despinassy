@@ -10,6 +10,10 @@ class TestDatabaseInventory(unittest.TestCase):
         })
         db.create_all()
 
+    @classmethod
+    def tearDownClass(self):
+        db.drop_all()
+
     def test_inventory_creation(self):
         p = Part(name="BARCODE", barcode="QWERTY1234")
         db.session.add(p)
@@ -31,9 +35,6 @@ class TestDatabaseInventory(unittest.TestCase):
     def test_inventory_query_3(self):
         Inventory.query.delete()
         self.assertEqual(Inventory.query.count(), 0)
-
-    def tearDown(self):
-        pass
 
 if __name__ == '__main__':
     unittest.main()
