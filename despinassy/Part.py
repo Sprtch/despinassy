@@ -39,16 +39,14 @@ class Part(db.Model):
                     csv_map[column] = column
         
         Part.query.delete() # Completely remove every entry in Part.
+        parts = []
         for i, row in enumerate(csv_reader):
             args = {}
             for x in csv_map.keys():
                 args[csv_map[x]] = row[x]
+            parts.append(args)
 
-            db.session.add(Part(**args))
-            try:
-                db.session.commit()
-            except:
-                db.session.rollback()
+        db.session.bulk_insert_mappings(Part, parts)
 
     @staticmethod
     def import_csv(filename, csv_map=None):
