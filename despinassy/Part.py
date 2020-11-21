@@ -8,12 +8,9 @@ import os
 
 class Part(db.Model):
     __tablename__ = 'part'
-    __table_args__ = (
-        db.UniqueConstraint('barcode', 'name', name='_barcode_name_uc'),
-   )
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    barcode = db.Column(db.String(120), index=True)
+    barcode = db.Column(db.String(120), unique=True, index=True)
     name = db.Column(db.String(50))
     counter = db.Column(db.Integer, default=0)
     inventories = relationship('Inventory', back_populates='part')
