@@ -62,5 +62,5 @@ class Part(db.Model):
         if not os.path.exists(filename):
             raise FileNotFoundError
 
-        with open(filename, mode="r", encoding="ISO-8859-1", errors='ignore') as csv_file:
+        with open(filename, mode="r", encoding="utf-8", errors='ignore') as csv_file:
             Part._import_csv_content(csv_file, csv_map)
