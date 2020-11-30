@@ -2,13 +2,18 @@ import unittest
 from despinassy import db, Part, Inventory
 import sqlalchemy
 
-class TestDatabase(unittest.TestCase):
-    def setUp(self):
+class TestDatabaseInventory(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
         db.init_app(config={
             'uri': 'sqlite://',
         })
         db.drop_all()
         db.create_all()
+
+    @classmethod
+    def tearDownClass(self):
+        db.drop_all()
 
     def test_inventory_creation(self):
         p = Part(name="BARCODE", barcode="QWERTY1234")
@@ -18,22 +23,19 @@ class TestDatabase(unittest.TestCase):
         db.session.commit()
         self.assertEqual(Inventory.query.count(), 1)
 
-    def test_inventory_query1(self):
+    def test_inventory_query_1(self):
         p = Part.query.filter(Part.barcode == "QWERTY1234").first()
         
         self.assertEqual(len(p.inventories), 1)
 
-    def test_inventory_query2(self):
+    def test_inventory_query_2(self):
         p = Part.query.filter(Part.barcode == "QWERTY1234").first()
         i = p.inventories[0]
         self.assertEqual(i.part_id, p.id)
 
-    def test_inventory_query3(self):
-        p = Part.query.delete()
+    def test_inventory_query_3(self):
+        Inventory.query.delete()
         self.assertEqual(Inventory.query.count(), 0)
-
-    def tearDown(self):
-        pass
 
 if __name__ == '__main__':
     unittest.main()

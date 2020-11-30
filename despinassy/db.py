@@ -30,12 +30,16 @@ class NO_APP:
 
 class Despinassy(SQLAlchemy):
     def __init__(self):
+        self.initialized = False
         super().__init__(
             query_class=orm.Query,
             model_class=Model,
         )
 
     def init_app(self, app=None, config={}):
+        if self.initialized:
+            return
+        self.initialized = True
         if app is None:
             app = NO_APP(config)
             self.app = app

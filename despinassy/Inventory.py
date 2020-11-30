@@ -1,6 +1,7 @@
 from despinassy.db import db
 from sqlalchemy.orm import relationship, backref
 import csv
+import datetime
 
 class Inventory(db.Model):
     __tablename__ = 'inventory'
@@ -9,6 +10,8 @@ class Inventory(db.Model):
     counter = db.Column(db.Integer, default=0)
     part_id = db.Column(db.Integer, db.ForeignKey('part.id'), unique=True)
     part = relationship('Part')
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
     def __repr__(self):
         return "<Inventory id=%i count=%i barcode='%s'>" % (self.id, self.counter, self.part.barcode)
