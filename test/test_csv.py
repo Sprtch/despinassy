@@ -79,5 +79,21 @@ class TestCsv(unittest.TestCase):
         Part._import_csv_content(csv)
         self.assertEqual(Part.query.count(), 2)
 
+    def test_csv_export_1(self):
+        BARCODE = "QWERTY1234"
+        NAME = "BARCODE"
+        p = Part(name=NAME, barcode=BARCODE)
+        db.session.add(p)
+        i = Inventory(part=p)
+        db.session.add(i)
+        db.session.commit()
+        
+        self.assertEqual(Inventory.query.count(), 1)
+        output = Inventory._export_csv().getvalue().strip()
+        self.assertEqual(len(output.split("\n")), 2)
+        header, content = output.split("\n")
+        self.assertEqual(header, "id,part_name,part_barcode,quantity,created_at,updated_at")
+        self.assertTrue("BARCODE,QWERTY1234,0," in content)
+
 if __name__ == '__main__':
     unittest.main()
