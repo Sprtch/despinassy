@@ -1,4 +1,5 @@
 from despinassy.db import db
+from despinassy.Part import Part
 from sqlalchemy.orm import relationship, backref
 import csv
 import datetime
@@ -25,6 +26,10 @@ class Inventory(db.Model):
             'part': self.part.to_dict(),
             'counter': self.counter,
         }
+
+    @staticmethod
+    def retrieve_inventory_from_barcode(barcode):
+        return db.session.query(Inventory).join(Part).filter(Part.barcode == barcode).first()
 
     @staticmethod
     def export_csv():

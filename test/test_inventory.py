@@ -15,13 +15,30 @@ class TestDatabaseInventory(unittest.TestCase):
     def tearDownClass(self):
         db.drop_all()
 
-    def test_inventory_creation(self):
-        p = Part(name="BARCODE", barcode="QWERTY1234")
+    def test_inventory_creation_1(self):
+        BARCODE = "QWERTY1234"
+        NAME = "BARCODE"
+        p = Part(name=NAME, barcode=BARCODE)
         db.session.add(p)
         i = Inventory(part=p)
         db.session.add(i)
         db.session.commit()
         self.assertEqual(Inventory.query.count(), 1)
+
+    def test_inventory_creation_2(self):
+        BARCODE = "HELLO1234"
+        NAME = "BARCODE 2"
+        p = Part(name=NAME, barcode=BARCODE)
+        db.session.add(p)
+        i = Inventory(part=p)
+        db.session.add(i)
+        db.session.commit()
+
+        self.assertEqual(len(Part.query.filter(Part.barcode == BARCODE).all()), 1)
+
+        # Inventory.create_inventory_from_barcode("HELLO1234")
+
+        self.assertEqual(Inventory.query.count(), 2)
 
     def test_inventory_query_1(self):
         p = Part.query.filter(Part.barcode == "QWERTY1234").first()
@@ -34,6 +51,13 @@ class TestDatabaseInventory(unittest.TestCase):
         self.assertEqual(i.part_id, p.id)
 
     def test_inventory_query_3(self):
+        p = Part.query.filter(Part.barcode == "HELLO1234").first()
+
+        i = Inventory.retrieve_inventory_from_barcode("HELLO1234")
+
+        self.assertEqual(i.part_id, p.id)
+
+    def test_inventory_query_4(self):
         Inventory.query.delete()
         self.assertEqual(Inventory.query.count(), 0)
 
