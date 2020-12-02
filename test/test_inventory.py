@@ -26,6 +26,7 @@ class TestDatabaseInventory(unittest.TestCase):
         i = Inventory(part=p)
         db.session.add(i)
         db.session.commit()
+        return i
 
     def test_inventory_query_1(self):
         self.assertEqual(Inventory.query.count(), 0)
@@ -61,7 +62,7 @@ class TestDatabaseInventory(unittest.TestCase):
         i = Inventory.retrieve_inventory_from_barcode("HELLO1234")
         self.assertEqual(i.part_id, p.id)
 
-    def test_inventory_query_4(self):
+    def test_inventory_delete(self):
         TestDatabaseInventory.inventory_creation("BARCODE", "QWERTY1234")
         self.assertEqual(Inventory.query.count(), 1)
         TestDatabaseInventory.inventory_creation("BARCODE 2", "HELLO1234")
@@ -70,6 +71,39 @@ class TestDatabaseInventory(unittest.TestCase):
 
         Inventory.query.delete()
         self.assertEqual(Inventory.query.count(), 0)
+
+    def test_inventory_quantity(self):
+        i1 = TestDatabaseInventory.inventory_creation("BARCODE", "QWERTY1234")
+        self.assertEqual(Inventory.query.count(), 1)
+        i2 = TestDatabaseInventory.inventory_creation("BARCODE 2", "HELLO1234")
+        self.assertEqual(len(Part.query.filter(Part.barcode == "HELLO1234").all()), 1)
+        self.assertEqual(Inventory.query.count(), 2)
+
+        self.assertEqual(i1.quantity, 0)
+        self.assertEqual(i2.quantity, 0)
+
+        i1.add()
+        self.assertEqual(i1.quantity, 1)
+        i2.add(3)
+        self.assertEqual(i2.quantity, 3)
+        i1.add(2)
+        self.assertEqual(i1.quantity, 3)
+
+    def test_inventory_to_dict(self):
+        result = {
+            "id": 1,
+            "part": {
+                'id': 1,
+                'barcode': "QWERTY1234",
+                'name': "BARCODE",
+                'counter': 0,
+            },
+            'quantity': 0
+        }
+        i1 = TestDatabaseInventory.inventory_creation("BARCODE", "QWERTY1234")
+        self.assertEqual(Inventory.query.count(), 1)
+
+        self.assertEqual(i1.to_dict(), result)
 
 if __name__ == '__main__':
     unittest.main()
