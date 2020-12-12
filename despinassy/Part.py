@@ -20,8 +20,8 @@ class Part(db.Model):
     def __repr__(self):
         return '<Part %r:%r>' % (self.name, self.barcode)
 
-    def printed(self):
-        self.counter += 1
+    def printed(self, number=1):
+        self.counter += number
 
     def to_dict(self):
         return {
