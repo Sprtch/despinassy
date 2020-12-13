@@ -1,6 +1,7 @@
 import dataclasses
 from enum import IntEnum
 from typing import Optional
+import json
 
 class IpcOrigin(IntEnum):
     UNDEFINED = 0
