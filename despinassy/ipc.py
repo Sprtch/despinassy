@@ -58,3 +58,12 @@ def ipc_create_print_message(instance, **kwargs):
 
 def redis_subscribers_num(redis, channel):
     return redis.execute_command('PUBSUB', 'NUMSUB', channel)[1]
+
+def redis_send_to_print(redis, channel, msg: IpcPrintMessage, **kwargs):
+    if redis_subscribers_num(r, channel):
+       return r.publish(
+           chan,
+           json.dumps(msg._asdict())
+       )
+    else:
+       return None
