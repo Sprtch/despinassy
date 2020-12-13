@@ -1,8 +1,8 @@
 import dataclasses
-from enum import Enum
+from enum import IntEnum
 from typing import Optional
 
-class IpcOrigin(Enum):
+class IpcOrigin(IntEnum):
     UNDEFINED = 0
     TEST = 1
     HURON = 2
@@ -17,6 +17,7 @@ class IpcPrintMessage:
     number: int = 1
 
     def __post_init__(self):
+        self.origin = IpcOrigin(self.origin) # TODO how to automatically create IpcOrigin object from int at creation ?
         for field in dataclasses.fields(self):
             value = getattr(self, field.name)
             if hasattr(field.type, "__args__") and len(field.type.__args__) == 2 and field.type.__args__[-1] is type(None):
