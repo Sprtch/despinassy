@@ -1,6 +1,7 @@
 import unittest
 from despinassy.ipc import IpcPrintMessage, ipc_create_print_message, redis_subscribers_num
 from collections import namedtuple
+import dataclasses
 
 class TestRedis(unittest.TestCase):
     def test_msg_cast1(self):
@@ -41,9 +42,14 @@ class TestRedis(unittest.TestCase):
 
         self.assertTrue(isinstance(msg, IpcPrintMessage))
         self.assertEqual(msg.barcode, "hello")
-        self.assertEqual(msg.origin, None)
+        self.assertEqual(msg.origin, '')
         self.assertEqual(msg.name, '')
         self.assertEqual(msg.number, 1)
+
+    def test_msg_dict1(self):
+        msgdict = dict(barcode="barcode", name="name", origin="test", number=1)
+        msg = ipc_create_print_message({}, **msgdict)
+        self.assertEqual(msgdict, msg._asdict())
 
 if __name__ == '__main__':
     unittest.main()
