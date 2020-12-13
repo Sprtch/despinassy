@@ -62,7 +62,7 @@ def redis_subscribers_num(redis, channel):
 def redis_send_to_print(redis, channel, msg: IpcPrintMessage, **kwargs):
     if redis_subscribers_num(redis, channel):
        return redis.publish(
-           chan,
+           channel,
            json.dumps(msg._asdict())
        )
     else:
