@@ -1,6 +1,6 @@
 import dataclasses
 from enum import IntEnum
-from typing import Optional
+from typing import Optional, Union
 import json
 
 
@@ -17,25 +17,13 @@ class IpcPrintMessage:
     origin: IpcOrigin = IpcOrigin.UNDEFINED
     device: Optional[str] = None
     name: str = ""
-    number: float = 1.0
+    number: Union[int, float] = 1.0
 
     def __post_init__(self):
-        self.origin = IpcOrigin(
-            self.origin
-        )  # TODO how to automatically create IpcOrigin object from int at creation ?
-        for field in dataclasses.fields(self):
-            value = getattr(self, field.name)
-            if hasattr(field.type, "__args__") and len(
-                    field.type.__args__
-            ) == 2 and field.type.__args__[-1] is type(None):
-                if value is not None and not isinstance(
-                        value, field.type.__args__[0]):
-                    raise ValueError('Expected %s to be either %s or None' %
-                                     (field.name, field.type.__args__[0]))
-            elif not isinstance(value, field.type):
-                raise ValueError(
-                    'Expected %s to be %s, got %s of type %s' %
-                    (field.name, field.type, value, str(type(value))))
+        self.barcode = str(self.barcode)
+        self.origin = IpcOrigin(self.origin)
+        self.name = str(self.name)
+        self.number = float(self.number)
 
     def _asdict(self):
         return dataclasses.asdict(self)
