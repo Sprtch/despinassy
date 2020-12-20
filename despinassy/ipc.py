@@ -17,7 +17,7 @@ class IpcPrintMessage:
     origin: IpcOrigin = IpcOrigin.UNDEFINED
     device: Optional[str] = None
     name: str = ""
-    number: int = 1
+    number: float = 1.0
 
     def __post_init__(self):
         self.origin = IpcOrigin(
