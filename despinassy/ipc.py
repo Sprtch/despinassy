@@ -30,9 +30,8 @@ class IpcPrintMessage:
             ) == 2 and field.type.__args__[-1] is type(None):
                 if value is not None and not isinstance(
                         value, field.type.__args__[0]):
-                    raise ValueError(
-                        'Expected %s to be either %s or None' % (field.name, field.type.__args__[0]))
-                    )
+                    raise ValueError('Expected %s to be either %s or None' %
+                                     (field.name, field.type.__args__[0]))
             elif not isinstance(value, field.type):
                 raise ValueError('Expected %s to be %s, got %s' %
                                  (field.value, field.type, value))
