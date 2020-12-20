@@ -34,7 +34,7 @@ class IpcPrintMessage:
                                      (field.name, field.type.__args__[0]))
             elif not isinstance(value, field.type):
                 raise ValueError('Expected %s to be %s, got %s' %
-                                 (field.value, field.type, value))
+                                 (field.name, field.type, value))
 
     def _asdict(self):
         return dataclasses.asdict(self)
