@@ -78,7 +78,7 @@ class TestRedis(unittest.TestCase):
         dump = json.dumps(i._asdict())
         self.assertEqual(
             dump,
-            '{"barcode": "barcode", "origin": 1, "device": null, "name": "name", "number": 1.0}'
+            '{"barcode": "barcode", "origin": 1, "device": null, "name": "name", "number": 1}'
         )
         ii = IpcPrintMessage(**json.loads(dump))
         self.assertEqual(ii, i)

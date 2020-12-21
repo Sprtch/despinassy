@@ -17,13 +17,13 @@ class IpcPrintMessage:
     origin: IpcOrigin = IpcOrigin.UNDEFINED
     device: Optional[str] = None
     name: str = ""
-    number: Union[int, float] = 1.0
+    number: Union[int, float] = 1
 
     def __post_init__(self):
         self.barcode = str(self.barcode)
         self.origin = IpcOrigin(self.origin)
         self.name = str(self.name)
-        self.number = float(self.number)
+        self.number = int(self.number)
 
     def _asdict(self):
         return dataclasses.asdict(self)
