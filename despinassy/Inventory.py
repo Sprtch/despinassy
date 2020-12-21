@@ -6,6 +6,7 @@ import csv
 import io
 import datetime
 
+
 class Inventory(db.Model):
     __tablename__ = 'inventory'
 
@@ -17,7 +18,8 @@ class Inventory(db.Model):
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
     def __repr__(self):
-        return "<Inventory id=%i count=%i barcode='%s'>" % (self.id, self.counter, self.part.barcode)
+        return "<Inventory id=%i count=%i barcode='%s'>" % (
+            self.id, self.counter, self.part.barcode)
 
     def add(self, number=1):
         self.quantity += number
@@ -31,13 +33,20 @@ class Inventory(db.Model):
 
     @staticmethod
     def retrieve_inventory_from_barcode(barcode):
-        return db.session.query(Inventory).join(Part).filter(Part.barcode == barcode).first()
+        return db.session.query(Inventory).join(Part).filter(
+            Part.barcode == barcode).first()
 
     @staticmethod
     def _export_csv(delimiter=","):
         strio = io.StringIO(newline=None)
-        columns = ["id", "part_name", "part_barcode", "quantity", "created_at", "updated_at"]
-        writer = csv.DictWriter(strio, fieldnames=columns, delimiter=delimiter, lineterminator='\n')       
+        columns = [
+            "id", "part_name", "part_barcode", "quantity", "created_at",
+            "updated_at"
+        ]
+        writer = csv.DictWriter(strio,
+                                fieldnames=columns,
+                                delimiter=delimiter,
+                                lineterminator='\n')
         writer.writeheader()
         for i in Inventory.query.all():
             row = {
