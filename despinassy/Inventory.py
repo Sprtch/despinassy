@@ -22,7 +22,7 @@ class Inventory(db.Model):
             self.id, self.counter, self.part.barcode)
 
     def add(self, number=1):
-        self.quantity += number
+        self.quantity += int(number)
 
     def to_dict(self):
         return {
