@@ -1,6 +1,7 @@
 from despinassy.db import db
 from enum import IntEnum
 import datetime
+import json
 
 
 class PrinterDialectEnum(IntEnum):
@@ -39,6 +40,18 @@ class Printer(db.Model):
 
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'type': self.type,
+            'width': self.width,
+            'height': self.height,
+            'dialect': self.dialect,
+            'name': self.name,
+            'redis': self.redis,
+            'settings': json.loads(self.settings),
+        }
 
     def __repr__(self):
         return "<Printer id=%i name='%s' redis='%s' settings='%s'>" % (
