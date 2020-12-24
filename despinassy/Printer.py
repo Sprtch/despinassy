@@ -8,6 +8,15 @@ class PrinterDialectEnum(IntEnum):
     ZEBRA_ZPL = 1
     TEST_JSON = 2
 
+    @staticmethod
+    def from_extension(extension: str):
+        if extension == "zpl":
+            return PrinterDialectEnum.ZEBRA_ZPL
+        elif extension == "json":
+            return PrinterDialectEnum.TEST_JSON
+        else:
+            return PrinterDialectEnum.UNDEFINED
+
 
 class PrinterTypeEnum(IntEnum):
     UNDEFINED = 0
