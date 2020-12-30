@@ -54,5 +54,5 @@ class Printer(db.Model):
         }
 
     def __repr__(self):
-        return "<Printer id=%i name='%s' redis='%s' settings='%s'>" % (
-            self.id, self.name, self.redis, self.settings)
+        return "<Printer id=%i type=%i name='%s' redis='%s' settings='%s'>" % (
+            self.id, self.type, self.name, self.redis, self.settings)
