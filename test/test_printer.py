@@ -1,7 +1,7 @@
 import unittest
 import json
 from despinassy import db
-from despinassy.Printer import Printer, PrinterDialectEnum, PrinterTypeEnum
+from despinassy.Printer import Printer, PrinterTransaction, PrinterDialectEnum, PrinterTypeEnum
 
 
 class TestDatabasePrinter(unittest.TestCase):
@@ -33,6 +33,21 @@ class TestDatabasePrinter(unittest.TestCase):
         self.assertEqual(p.dialect, PrinterDialectEnum.ZEBRA_ZPL)
         self.assertEqual(Printer.query.get(p.id), p)
         self.assertEqual(json.loads(p.settings)['address'], "192.168.0.1")
+
+    def test_printer_transaction(self):
+        p = Printer(name="main",
+                    type=1,
+                    dialect=1,
+                    redis="victoria",
+                    settings='{"address": "192.168.0.1"}')
+        db.session.add(p)
+        pt = PrinterTransaction(printer=p, value="FOOBAR123")
+        db.session.add(pt)
+        db.session.commit()
+        self.assertEqual(Printer.query.count(), 1)
+        self.assertEqual(PrinterTransaction.query.count(), 1)
+        self.assertEqual(len(p.transactions), 1)
+        self.assertEqual(p.transactions[0], pt)
 
 
 if __name__ == '__main__':

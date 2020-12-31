@@ -1,7 +1,6 @@
 import unittest
-import json
 from despinassy import db
-from despinassy.Scanner import Scanner, ScannerTypeEnum
+from despinassy.Scanner import Scanner, ScannerTransaction, ScannerTypeEnum, ScannerModeEnum
 
 
 class TestDatabaseScanner(unittest.TestCase):
@@ -30,6 +29,22 @@ class TestDatabaseScanner(unittest.TestCase):
         self.assertEqual(Scanner.query.count(), 1)
         self.assertEqual(s.type, ScannerTypeEnum.TEST)
         self.assertEqual(Scanner.query.get(s.id), s)
+
+    def test_scanner_transaction(self):
+        s = Scanner(name="main",
+                    type=ScannerTypeEnum.TEST,
+                    redis="victoria",
+                    settings='{}')
+        db.session.add(s)
+        st = ScannerTransaction(scanner=s,
+                                mode=ScannerModeEnum.PRINTMODE,
+                                value="FOOBAR123")
+        db.session.add(st)
+        db.session.commit()
+        self.assertEqual(Scanner.query.count(), 1)
+        self.assertEqual(ScannerTransaction.query.count(), 1)
+        self.assertEqual(len(s.transactions), 1)
+        self.assertEqual(s.transactions[0], st)
 
 
 if __name__ == '__main__':
