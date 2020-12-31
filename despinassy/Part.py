@@ -1,10 +1,11 @@
 from despinassy.db import db
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 from sqlalchemy import inspect
 import datetime
 import csv
 import io
 import os
+
 
 class Part(db.Model):
     __tablename__ = 'part'
@@ -32,7 +33,10 @@ class Part(db.Model):
         }
 
     @staticmethod
-    def _import_csv_content(strio: io.TextIOWrapper, csv_map=None, delimiter=",", **kwargs):
+    def _import_csv_content(strio: io.TextIOWrapper,
+                            csv_map=None,
+                            delimiter=",",
+                            **kwargs):
         csv_reader = csv.DictReader(strio, delimiter=delimiter, **kwargs)
 
         if csv_map is None:
@@ -40,8 +44,8 @@ class Part(db.Model):
             for column in inspect(Part).columns.keys():
                 if column in csv_reader.fieldnames:
                     csv_map[column] = column
-        
-        Part.query.delete() # Completely remove every entry in Part.
+
+        Part.query.delete()  # Completely remove every entry in Part.
         parts = []
         for i, row in enumerate(csv_reader):
             args = {}
@@ -62,5 +66,6 @@ class Part(db.Model):
         if not os.path.exists(filename):
             raise FileNotFoundError
 
-        with open(filename, mode="r", encoding="utf-8", errors='ignore') as csv_file:
+        with open(filename, mode="r", encoding="utf-8",
+                  errors='ignore') as csv_file:
             Part._import_csv_content(csv_file, csv_map)
