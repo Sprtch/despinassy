@@ -1,7 +1,6 @@
 from despinassy.db import db
 from despinassy.Part import Part
-from sqlalchemy import inspect
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 import csv
 import io
 import datetime
