@@ -36,14 +36,25 @@ class Scanner(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'type': self.type,
-            'name': self.name,
-            'redis': self.redis,
-            'settings': json.loads(self.settings),
-        }
+    def to_dict(self, full=False):
+        if full:
+            return {
+                'id': self.id,
+                'type': self.type,
+                'name': self.name,
+                'redis': self.redis,
+                'available': self.available,
+                'settings': json.loads(self.settings),
+                'transactions': [t.to_dict() for t in self.transactions],
+            }
+        else:
+            return {
+                'id': self.id,
+                'type': self.type,
+                'name': self.name,
+                'redis': self.redis,
+                'available': self.available,
+            }
 
     def add_transaction(self, **kwargs):
         st = ScannerTransaction(scanner=self, **kwargs)
@@ -65,3 +76,11 @@ class ScannerTransaction(db.Model):
     mode = db.Column(db.Enum(ScannerModeEnum), nullable=False)
     quantity = db.Column(db.Integer, default=1)
     value = db.Column(db.String(50), nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'mode': int(self.mode),
+            'quantity': self.quantity,
+            'value': self.value,
+        }
