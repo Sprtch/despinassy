@@ -47,7 +47,6 @@ class Scanner(db.Model):
 
     def add_transaction(self, **kwargs):
         st = ScannerTransaction(scanner=self, **kwargs)
-        db.session.add(st)
         return st
 
     def __repr__(self):

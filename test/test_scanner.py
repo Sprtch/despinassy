@@ -55,6 +55,7 @@ class TestDatabaseScanner(unittest.TestCase):
         db.session.add(s)
         st = s.add_transaction(mode=ScannerModeEnum.PRINTMODE,
                                value="FOOBAR123")
+        db.session.add(st)
         db.session.commit()
         self.assertEqual(Scanner.query.count(), 1)
         self.assertEqual(ScannerTransaction.query.count(), 1)
