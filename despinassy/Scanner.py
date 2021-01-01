@@ -69,9 +69,7 @@ class ScannerTransaction(db.Model):
     __tablename__ = 'scanner_transaction'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    scanner_id = db.Column(db.Integer,
-                           db.ForeignKey('scanner.id'),
-                           unique=True)
+    scanner_id = db.Column(db.Integer, db.ForeignKey('scanner.id'))
     scanner = relationship('Scanner')
     mode = db.Column(db.Enum(ScannerModeEnum), nullable=False)
     quantity = db.Column(db.Integer, default=1)
