@@ -77,6 +77,7 @@ class ScannerTransaction(db.Model):
     mode = db.Column(db.Enum(ScannerModeEnum), nullable=False)
     quantity = db.Column(db.Integer, default=1)
     value = db.Column(db.String(50), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def to_dict(self):
         return {
@@ -84,4 +85,5 @@ class ScannerTransaction(db.Model):
             'mode': int(self.mode),
             'quantity': self.quantity,
             'value': self.value,
+            'created_at': self.created_at,
         }
