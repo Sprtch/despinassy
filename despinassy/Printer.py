@@ -44,17 +44,31 @@ class Printer(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'type': self.type,
-            'width': self.width,
-            'height': self.height,
-            'dialect': self.dialect,
-            'name': self.name,
-            'redis': self.redis,
-            'settings': json.loads(self.settings),
-        }
+    def to_dict(self, full=False):
+        if full:
+            return {
+                'id': self.id,
+                'type': self.type,
+                'width': self.width,
+                'height': self.height,
+                'dialect': self.dialect,
+                'name': self.name,
+                'redis': self.redis,
+            }
+        else:
+            return {
+                'id': self.id,
+                'type': self.type,
+                'width': self.width,
+                'height': self.height,
+                'dialect': self.dialect,
+                'name': self.name,
+                'redis': self.redis,
+                'settings': json.loads(self.settings),
+                'transactions': [t.to_dict() for t in self.transactions],
+                'created_at': self.created_at,
+                'updated_at': self.updated_at,
+            }
 
     def __repr__(self):
         return "<Printer id=%i type=%i name='%s' redis='%s' settings='%s'>" % (
@@ -70,3 +84,11 @@ class PrinterTransaction(db.Model):
                            unique=True)
     printer = relationship('Printer')
     value = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'value': self.value,
+            'created_at': self.created_at,
+        }
