@@ -14,6 +14,7 @@ class ScannerTypeEnum(IntEnum):
 
 
 class ScannerModeEnum(IntEnum):
+    UNDEFINED = 0
     PRINTMODE = 1
     INVENTORYMODE = 2
 
@@ -43,6 +44,11 @@ class Scanner(db.Model):
             'redis': self.redis,
             'settings': json.loads(self.settings),
         }
+
+    def add_transaction(self, **kwargs):
+        st = ScannerTransaction(scanner=self, **kwargs)
+        db.session.add(st)
+        return st
 
     def __repr__(self):
         return "<Scanner id=%i type=%i name='%s' redis='%s' settings='%s'>" % (

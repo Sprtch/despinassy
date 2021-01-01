@@ -18,6 +18,7 @@ class TestDatabaseScanner(unittest.TestCase):
 
     def tearDown(self):
         Scanner.query.delete()
+        ScannerTransaction.query.delete()
 
     def test_scanner_creation(self):
         s = Scanner(name="main",
@@ -40,6 +41,20 @@ class TestDatabaseScanner(unittest.TestCase):
                                 mode=ScannerModeEnum.PRINTMODE,
                                 value="FOOBAR123")
         db.session.add(st)
+        db.session.commit()
+        self.assertEqual(Scanner.query.count(), 1)
+        self.assertEqual(ScannerTransaction.query.count(), 1)
+        self.assertEqual(len(s.transactions), 1)
+        self.assertEqual(s.transactions[0], st)
+
+    def test_scanner_add_transaction(self):
+        s = Scanner(name="main",
+                    type=ScannerTypeEnum.TEST,
+                    redis="victoria",
+                    settings='{}')
+        db.session.add(s)
+        st = s.add_transaction(mode=ScannerModeEnum.PRINTMODE,
+                               value="FOOBAR123")
         db.session.commit()
         self.assertEqual(Scanner.query.count(), 1)
         self.assertEqual(ScannerTransaction.query.count(), 1)
