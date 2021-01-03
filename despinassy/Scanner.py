@@ -43,20 +43,24 @@ class Scanner(db.Model):
                 'type': self.type,
                 'name': self.name,
                 'redis': self.redis,
-                'available': self.available,
                 'settings': json.loads(self.settings),
-                'transactions': [t.to_dict() for t in self.transactions],
+                'mode': self.mode,
+                'available': self.available,
                 'created_at': self.created_at,
                 'updated_at': self.updated_at,
+                'transactions': [t.to_dict() for t in self.transactions],
             }
         else:
             return {
                 'id': self.id,
                 'type': self.type,
-                'mode': self.mode,
-                'available': self.available,
                 'name': self.name,
                 'redis': self.redis,
+                'settings': json.loads(self.settings),
+                'mode': self.mode,
+                'available': self.available,
+                'created_at': self.created_at,
+                'updated_at': self.updated_at,
             }
 
     def add_transaction(self, **kwargs):
