@@ -64,6 +64,7 @@ class Scanner(db.Model):
             }
 
     def add_transaction(self, **kwargs):
+        self.updated_at = datetime.datetime.utcnow()
         st = ScannerTransaction(scanner=self, **kwargs)
         return st
 
