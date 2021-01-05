@@ -2,3 +2,4 @@ pytest
 SQLAlchemy
 SQLAlchemy-Utils
 Flask-SQLAlchemy
+psycopg2
