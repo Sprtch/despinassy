@@ -55,6 +55,10 @@ class Printer(db.Model):
                 'dialect': self.dialect,
                 'name': self.name,
                 'redis': self.redis,
+                'settings': json.loads(self.settings),
+                'transactions': [t.to_dict() for t in self.transactions],
+                'created_at': self.created_at,
+                'updated_at': self.updated_at,
             }
         else:
             return {
@@ -66,7 +70,6 @@ class Printer(db.Model):
                 'name': self.name,
                 'redis': self.redis,
                 'settings': json.loads(self.settings),
-                'transactions': [t.to_dict() for t in self.transactions],
                 'created_at': self.created_at,
                 'updated_at': self.updated_at,
             }
@@ -89,8 +92,8 @@ class PrinterTransaction(db.Model):
                            db.ForeignKey('printer.id'),
                            unique=True)
     printer = relationship('Printer')
-    barcode = db.Column(db.String(50))
-    name = db.Column(db.String(120))
+    barcode = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(120), nullable=False)
     number = db.Column(db.Integer, default=1)
     origin = db.Column(db.Enum(IpcOrigin), nullable=False)
     device = db.Column(db.String(50))
