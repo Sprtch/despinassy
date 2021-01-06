@@ -1,4 +1,5 @@
 from despinassy.db import db
+from despinassy.ipc import IpcOrigin
 from sqlalchemy.orm import relationship
 from enum import IntEnum
 import datetime
@@ -70,6 +71,11 @@ class Printer(db.Model):
                 'updated_at': self.updated_at,
             }
 
+    def add_transaction(self, **kwargs):
+        self.updated_at = datetime.datetime.utcnow()
+        pt = PrinterTransaction(printer=self, **kwargs)
+        return pt
+
     def __repr__(self):
         return "<Printer id=%i type=%i name='%s' redis='%s' settings='%s'>" % (
             self.id, self.type, self.name, self.redis, self.settings)
@@ -83,12 +89,20 @@ class PrinterTransaction(db.Model):
                            db.ForeignKey('printer.id'),
                            unique=True)
     printer = relationship('Printer')
-    value = db.Column(db.String(50))
+    barcode = db.Column(db.String(50))
+    name = db.Column(db.String(120))
+    number = db.Column(db.Integer, default=1)
+    origin = db.Column(db.Enum(IpcOrigin), nullable=False)
+    device = db.Column(db.String(50))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def to_dict(self):
         return {
             'id': self.id,
-            'value': self.value,
+            'barcode': self.barcode,
+            'name': self.name,
+            'number': self.number,
+            'origin': self.origin,
+            'device': self.device,
             'created_at': self.created_at,
         }
