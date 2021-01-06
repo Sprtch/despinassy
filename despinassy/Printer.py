@@ -88,9 +88,7 @@ class PrinterTransaction(db.Model):
     __tablename__ = 'printer_transaction'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    printer_id = db.Column(db.Integer,
-                           db.ForeignKey('printer.id'),
-                           unique=True)
+    printer_id = db.Column(db.Integer, db.ForeignKey('printer.id'))
     printer = relationship('Printer')
     barcode = db.Column(db.String(50), nullable=False)
     name = db.Column(db.String(120), nullable=False)
