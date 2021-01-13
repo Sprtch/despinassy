@@ -52,5 +52,11 @@ class Despinassy(SQLAlchemy):
         else:
             super().init_app(app)
 
+        return app
+
 
 db = Despinassy()
+
+if __name__ == "__main__":
+    app = db.init_app(config={})
+    db.create_all(app=app)
