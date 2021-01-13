@@ -78,10 +78,10 @@ class Part(db.Model):
         db.session.commit()
 
     @staticmethod
-    def import_csv(filename, csv_map=None):
+    def import_csv(filename, csv_map=None, encoding="latin1"):
         if not os.path.exists(filename):
             raise FileNotFoundError
 
-        with open(filename, mode="r", encoding="utf-8",
+        with open(filename, mode="r", encoding=encoding,
                   errors='ignore') as csv_file:
             Part._import_csv_content(csv_file, csv_map)

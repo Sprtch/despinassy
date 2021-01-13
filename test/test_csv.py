@@ -4,6 +4,7 @@ import sqlalchemy
 import io
 import uuid
 
+
 class TestCsv(unittest.TestCase):
     @classmethod
     def setUpClass(self):
@@ -43,8 +44,12 @@ class TestCsv(unittest.TestCase):
         Test to import a CSV StringIO in the DB
         """
         self.assertEqual(Part.query.count(), 0)
-        csv = io.StringIO("default_name,barcode\nhello,world\nfoo,bar\n123,456\n")
-        Part._import_csv_content(csv, {"default_name": "name", "barcode": "barcode"})
+        csv = io.StringIO(
+            "default_name,barcode\nhello,world\nfoo,bar\n123,456\n")
+        Part._import_csv_content(csv, {
+            "default_name": "name",
+            "barcode": "barcode"
+        })
         self.assertEqual(Part.query.count(), 3)
         p = Part.query.filter(Part.barcode == "bar").first()
         self.assertEqual(p.name, "foo")
@@ -75,9 +80,26 @@ class TestCsv(unittest.TestCase):
         Test the import of file with empty field that should be passed
         """
         self.assertEqual(Part.query.count(), 0)
-        csv = io.StringIO("name,barcode\nhello,world\nfoo,\n,456\n,433,\nfoo,bar\n")
+        csv = io.StringIO(
+            "name,barcode\nhello,world\nfoo,\n,456\n,433,\nfoo,bar\n")
         Part._import_csv_content(csv)
         self.assertEqual(Part.query.count(), 2)
+
+    def test_csv_import_latin_char(self):
+        self.assertEqual(Part.query.count(), 0)
+        name = "hèllô"
+        barcode = "wèrld"
+        csv = io.StringIO(("name,barcode\n%s,%s\n" % (name, barcode)))
+
+        filename = "/tmp/%s" % (uuid.uuid4())
+        with open(filename, "wb") as f:
+            f.write(csv.getvalue().encode("latin1"))
+
+        Part.import_csv(filename)
+        self.assertEqual(Part.query.count(), 1)
+        p = Part.query.get(1)
+        self.assertEqual(p.name, name)
+        self.assertEqual(p.barcode, barcode)
 
     def test_csv_export_1(self):
         BARCODE = "QWERTY1234"
@@ -87,13 +109,15 @@ class TestCsv(unittest.TestCase):
         i = Inventory(part=p)
         db.session.add(i)
         db.session.commit()
-        
+
         self.assertEqual(Inventory.query.count(), 1)
         output = Inventory._export_csv().getvalue().strip()
         self.assertEqual(len(output.split("\n")), 2)
         header, content = output.split("\n")
-        self.assertEqual(header, "id,part_name,part_barcode,quantity,created_at,updated_at")
+        self.assertEqual(
+            header, "id,part_name,part_barcode,quantity,created_at,updated_at")
         self.assertTrue("BARCODE,QWERTY1234,0," in content)
+
 
 if __name__ == '__main__':
     unittest.main()
