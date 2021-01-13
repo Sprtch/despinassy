@@ -1,6 +1,8 @@
 from despinassy.db import db
 from sqlalchemy.orm import relationship
 from sqlalchemy import inspect
+from sqlalchemy.orm import validates
+from sqlalchemy.exc import ArgumentError
 import datetime
 import csv
 import io
@@ -17,6 +19,20 @@ class Part(db.Model):
     inventories = relationship('Inventory', back_populates='part')
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
+
+    @validates('barcode')
+    def validate_barcode(self, key, value):
+        max_len = getattr(self.__class__, key).prop.columns[0].type.length
+        if value and len(value) > max_len:
+            raise ArgumentError('"barcode" value is too long')
+        return value
+
+    @validates('name')
+    def validate_name(self, key, value):
+        max_len = getattr(self.__class__, key).prop.columns[0].type.length
+        if value and len(value) > max_len:
+            return value[:max_len]
+        return value
 
     def __repr__(self):
         return '<Part %r:%r>' % (self.name, self.barcode)

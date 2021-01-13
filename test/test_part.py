@@ -18,13 +18,13 @@ class TestDatabasePart(unittest.TestCase):
     def tearDown(self):
         Part.query.delete()
 
-    def test_part_1_creation(self):
+    def test_part_creation(self):
         p = Part(name="BARCODE", barcode="QWERTY1234")
         db.session.add(p)
         db.session.commit()
         self.assertEqual(Part.query.count(), 1)
 
-    def test_part_2_query(self):
+    def test_part_query(self):
         x = Part(name="BARCODE", barcode="QWERTY1234")
         db.session.add(x)
         db.session.commit()
@@ -34,7 +34,7 @@ class TestDatabasePart(unittest.TestCase):
         self.assertEqual(p.barcode, "QWERTY1234")
         self.assertEqual(p.counter, 0)
 
-    def test_part_3_unique(self):
+    def test_part_unique(self):
         x = Part(name="BARCODE", barcode="QWERTY1234")
         db.session.add(x)
         db.session.commit()
@@ -43,7 +43,7 @@ class TestDatabasePart(unittest.TestCase):
         self.assertRaises(sqlalchemy.exc.IntegrityError, db.session.commit)
         db.session.rollback()
 
-    def test_part_4_delete(self):
+    def test_part_delete(self):
         x = Part(name="BARCODE", barcode="QWERTY1234")
         db.session.add(x)
         db.session.commit()
@@ -51,6 +51,20 @@ class TestDatabasePart(unittest.TestCase):
         Part.query.delete()
         db.session.commit()
         self.assertEqual(Part.query.count(), 0)
+
+    def test_part_long_barcode(self):
+        longbarcode = "X" * 256
+        self.assertRaises(sqlalchemy.exc.ArgumentError, Part, name="foo", barcode=longbarcode)
+
+
+    def test_part_long_name(self):
+        longname = "X" * 256
+        x = Part(name=longname, barcode="foo")
+        db.session.add(x)
+        db.session.commit()
+        self.assertEqual(len(x.name), 128) 
+
+
 
 if __name__ == '__main__':
     unittest.main()
