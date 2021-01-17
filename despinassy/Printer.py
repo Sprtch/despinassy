@@ -66,7 +66,7 @@ class Printer(db.Model):
                 'height': self.height,
                 'dialect': self.dialect,
                 'name': self.name,
-                'redis': self.redis,
+                'redis': str(self.redis),
                 'settings': json.loads(self.settings),
                 'transactions': [t.to_dict() for t in self.transactions],
                 'created_at': self.created_at,
@@ -80,7 +80,7 @@ class Printer(db.Model):
                 'height': self.height,
                 'dialect': self.dialect,
                 'name': self.name,
-                'redis': self.redis,
+                'redis': str(self.redis),
                 'settings': json.loads(self.settings),
                 'created_at': self.created_at,
                 'updated_at': self.updated_at,
@@ -93,7 +93,7 @@ class Printer(db.Model):
 
     def __repr__(self):
         return "<Printer id=%i type=%i name='%s' redis='%s' settings='%s'>" % (
-            self.id, self.type, self.name, self.redis, self.settings)
+            self.id, self.type, self.name, str(self.redis), self.settings)
 
 
 class PrinterTransaction(db.Model):

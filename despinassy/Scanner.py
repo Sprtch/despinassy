@@ -30,7 +30,7 @@ class Scanner(db.Model):
                      default=ScannerModeEnum.PRINTMODE,
                      nullable=False)
     available = db.Column(db.Boolean)
-    name = db.Column(db.String(50))
+    name = db.Column(db.String(50), unique=True)
     redis_id = db.Column(db.Integer, db.ForeignKey('channel.id'))
     redis = relationship('Channel')
     settings = db.Column(db.JSON)
@@ -55,7 +55,7 @@ class Scanner(db.Model):
                 'id': self.id,
                 'type': self.type,
                 'name': self.name,
-                'redis': self.redis,
+                'redis': str(self.redis),
                 'settings': json.loads(self.settings),
                 'mode': self.mode,
                 'available': self.available,
@@ -68,7 +68,7 @@ class Scanner(db.Model):
                 'id': self.id,
                 'type': self.type,
                 'name': self.name,
-                'redis': self.redis,
+                'redis': str(self.redis),
                 'settings': json.loads(self.settings),
                 'mode': self.mode,
                 'available': self.available,
@@ -83,7 +83,7 @@ class Scanner(db.Model):
 
     def __repr__(self):
         return "<Scanner id=%i type=%i name='%s' redis='%s' settings='%s'>" % (
-            self.id, self.type, self.name, self.redis, self.settings)
+            self.id, self.type, self.name, str(self.redis), self.settings)
 
 
 class ScannerTransaction(db.Model):
