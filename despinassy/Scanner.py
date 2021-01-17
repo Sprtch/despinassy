@@ -47,6 +47,7 @@ class Scanner(db.Model):
         else:
             c = Channel(name=value)
             db.session.add(c)
+            db.session.commit()
         return c
 
     def to_dict(self, full=False):
