@@ -45,9 +45,14 @@ class Scanner(db.Model):
         if c.count():
             c = c.first()
         else:
-            c = Channel(name=value)
-            db.session.add(c)
-            db.session.commit()
+            try:
+                c = Channel(name=value)
+                db.session.add(c)
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+                c = Channel.query.filter(Channel.name == value).first()
+
         return c
 
     def to_dict(self, full=False):
