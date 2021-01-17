@@ -47,6 +47,10 @@ class TestDatabaseChannel(unittest.TestCase):
         self.assertEqual(Scanner.query.count(), 1)
         self.assertEqual(Printer.query.count(), 2)
 
+        c = Channel.query.filter(Channel.name == "victoria").first()
+        self.assertEqual(len(c.printers), 2)
+        self.assertEqual(len(c.scanners), 1)
+
 
 if __name__ == '__main__':
     unittest.main()
