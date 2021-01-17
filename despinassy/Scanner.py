@@ -1,5 +1,6 @@
 from despinassy.db import db
-from sqlalchemy.orm import relationship
+from despinassy.Channel import Channel
+from sqlalchemy.orm import relationship, validates
 from enum import IntEnum
 import datetime
 import json
@@ -11,6 +12,7 @@ class ScannerTypeEnum(IntEnum):
     TEST = 2
     SERIAL = 3
     EVDEV = 4
+    HURON = 5
 
 
 class ScannerModeEnum(IntEnum):
@@ -29,12 +31,23 @@ class Scanner(db.Model):
                      nullable=False)
     available = db.Column(db.Boolean)
     name = db.Column(db.String(50))
-    redis = db.Column(db.String(50))
+    redis_id = db.Column(db.Integer, db.ForeignKey('channel.id'))
+    redis = relationship('Channel')
     settings = db.Column(db.JSON)
     transactions = relationship('ScannerTransaction', back_populates='scanner')
 
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
+
+    @validates('redis')
+    def validate_redis(self, key, value):
+        c = Channel.query.filter(Channel.name == value)
+        if c.count():
+            c = c.first()
+        else:
+            c = Channel(name=value)
+            db.session.add(c)
+        return c
 
     def to_dict(self, full=False):
         if full:

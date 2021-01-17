@@ -1,6 +1,7 @@
 import unittest
 from despinassy import db
 from despinassy.Scanner import Scanner, ScannerTransaction, ScannerTypeEnum, ScannerModeEnum
+from despinassy.Channel import Channel
 
 
 class TestDatabaseScanner(unittest.TestCase):
@@ -16,7 +17,13 @@ class TestDatabaseScanner(unittest.TestCase):
     def tearDownClass(self):
         db.drop_all()
 
+    def setUp(self):
+        c = Channel(name="victoria")
+        db.session.add(c)
+        db.session.commit()
+
     def tearDown(self):
+        Channel.query.delete()
         Scanner.query.delete()
         ScannerTransaction.query.delete()
 

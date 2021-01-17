@@ -1,6 +1,7 @@
 from despinassy.db import db
 from despinassy.ipc import IpcOrigin
-from sqlalchemy.orm import relationship
+from despinassy.Channel import Channel
+from sqlalchemy.orm import relationship, validates
 from enum import IntEnum
 import datetime
 import json
@@ -38,12 +39,23 @@ class Printer(db.Model):
     height = db.Column(db.Integer)
     dialect = db.Column(db.Enum(PrinterDialectEnum), nullable=False)
     name = db.Column(db.String(50), nullable=False)
-    redis = db.Column(db.String(50))
+    redis_id = db.Column(db.Integer, db.ForeignKey('channel.id'))
+    redis = relationship('Channel')
     settings = db.Column(db.JSON)
     transactions = relationship('PrinterTransaction', back_populates='printer')
 
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
+
+    @validates('redis')
+    def validate_redis(self, key, value):
+        c = Channel.query.filter(Channel.name == value)
+        if c.count():
+            c = c.first()
+        else:
+            c = Channel(name=value)
+            db.session.add(c)
+        return c
 
     def to_dict(self, full=False):
         if full:
@@ -90,6 +102,8 @@ class PrinterTransaction(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     printer_id = db.Column(db.Integer, db.ForeignKey('printer.id'))
     printer = relationship('Printer')
+    # part_id = db.Column(db.Integer, db.ForeignKey('part.id'), unique=True)
+    # part = relationship('Part')
     barcode = db.Column(db.String(50), nullable=False)
     name = db.Column(db.String(120), nullable=False)
     number = db.Column(db.Integer, default=1)

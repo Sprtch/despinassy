@@ -3,6 +3,7 @@ import json
 from despinassy import db
 from despinassy.ipc import IpcPrintMessage, IpcOrigin
 from despinassy.Printer import Printer, PrinterTransaction, PrinterDialectEnum, PrinterTypeEnum
+from despinassy.Channel import Channel
 
 
 class TestDatabasePrinter(unittest.TestCase):
@@ -18,8 +19,14 @@ class TestDatabasePrinter(unittest.TestCase):
     def tearDownClass(self):
         db.drop_all()
 
+    def setUp(self):
+        c = Channel(name="victoria")
+        db.session.add(c)
+        db.session.commit()
+
     def tearDown(self):
         Printer.query.delete()
+        Channel.query.delete()
         PrinterTransaction.query.delete()
 
     def test_printer_creation(self):
