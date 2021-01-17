@@ -1,6 +1,7 @@
 from despinassy.db import db
 from despinassy.Channel import Channel
 from sqlalchemy.orm import relationship, validates
+from sqlalchemy.exc import IntegrityError
 from enum import IntEnum
 import datetime
 import json
