@@ -37,6 +37,7 @@ class Scanner(db.Model):
     settings = db.Column(db.JSON)
     transactions = relationship('ScannerTransaction', back_populates='scanner')
 
+    hidden = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 

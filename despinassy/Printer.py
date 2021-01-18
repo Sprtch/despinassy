@@ -45,6 +45,7 @@ class Printer(db.Model):
     settings = db.Column(db.JSON)
     transactions = relationship('PrinterTransaction', back_populates='printer')
 
+    hidden = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
