@@ -68,6 +68,7 @@ class Printer(db.Model):
             return {
                 'id': self.id,
                 'type': self.type,
+                'available': self.available,
                 'width': self.width,
                 'height': self.height,
                 'dialect': self.dialect,
@@ -82,6 +83,7 @@ class Printer(db.Model):
             return {
                 'id': self.id,
                 'type': self.type,
+                'available': self.available,
                 'width': self.width,
                 'height': self.height,
                 'dialect': self.dialect,
