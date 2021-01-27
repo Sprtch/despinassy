@@ -2,6 +2,7 @@ from despinassy.db import db
 from despinassy.Channel import Channel
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import event
 from enum import IntEnum
 import datetime
 import json
@@ -105,11 +106,21 @@ class ScannerTransaction(db.Model):
     value = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'mode': int(self.mode),
-            'quantity': self.quantity,
-            'value': self.value,
-            'created_at': self.created_at,
-        }
+    def to_dict(self, full=False):
+        if full:
+            return {
+                'id': self.id,
+                'scanner': self.scanner_id,
+                'mode': int(self.mode),
+                'quantity': self.quantity,
+                'value': self.value,
+                'created_at': self.created_at,
+            }
+        else:
+            return {
+                'id': self.id,
+                'mode': int(self.mode),
+                'quantity': self.quantity,
+                'value': self.value,
+                'created_at': self.created_at,
+            }
