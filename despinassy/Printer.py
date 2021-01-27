@@ -79,6 +79,7 @@ class Printer(db.Model):
                 'transactions': [t.to_dict() for t in self.transactions],
                 'created_at': self.created_at,
                 'updated_at': self.updated_at,
+                'hidden': self.hidden,
             }
         else:
             return {
@@ -93,6 +94,7 @@ class Printer(db.Model):
                 'settings': json.loads(self.settings),
                 'created_at': self.created_at,
                 'updated_at': self.updated_at,
+                'hidden': self.hidden,
             }
 
     def add_transaction(self, **kwargs):

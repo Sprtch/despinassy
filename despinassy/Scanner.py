@@ -71,6 +71,7 @@ class Scanner(db.Model):
                 'created_at': self.created_at,
                 'updated_at': self.updated_at,
                 'transactions': [t.to_dict() for t in self.transactions],
+                'hidden': self.hidden,
             }
         else:
             return {
@@ -83,6 +84,7 @@ class Scanner(db.Model):
                 'available': self.available,
                 'created_at': self.created_at,
                 'updated_at': self.updated_at,
+                'hidden': self.hidden,
             }
 
     def add_transaction(self, **kwargs):
