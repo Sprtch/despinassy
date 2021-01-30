@@ -43,7 +43,9 @@ class Printer(db.Model):
     redis_id = db.Column(db.Integer, db.ForeignKey('channel.id'))
     redis = relationship('Channel')
     settings = db.Column(db.JSON)
-    transactions = relationship('PrinterTransaction', back_populates='printer')
+    transactions = relationship('PrinterTransaction', 
+            order_by="desc(PrinterTransaction.created_at)",
+            back_populates='printer')
 
     hidden = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)

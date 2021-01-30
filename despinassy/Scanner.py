@@ -36,7 +36,9 @@ class Scanner(db.Model):
     redis_id = db.Column(db.Integer, db.ForeignKey('channel.id'))
     redis = relationship('Channel')
     settings = db.Column(db.JSON)
-    transactions = relationship('ScannerTransaction', back_populates='scanner')
+    transactions = relationship('ScannerTransaction', 
+            order_by="desc(ScannerTransaction.created_at)",
+            back_populates='scanner')
 
     hidden = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)

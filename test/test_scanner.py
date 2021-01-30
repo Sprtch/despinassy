@@ -69,6 +69,29 @@ class TestDatabaseScanner(unittest.TestCase):
         self.assertEqual(len(s.transactions), 1)
         self.assertEqual(s.transactions[0], st)
 
+    def test_scanner_transaction_order(self):
+        """
+        Verify the order of the 'Scanner' table 'transactions' field.
+        The last added transactions should be the first one in the 
+        transaction list.
+        """
+        s = Scanner(name="main",
+                    type=ScannerTypeEnum.TEST,
+                    redis="victoria",
+                    settings='{}')
+        db.session.add(s)
+        st1 = s.add_transaction(mode=ScannerModeEnum.PRINTMODE,
+                               value="FOOBAR123")
+        db.session.add(st1)
+        st2 = s.add_transaction(mode=ScannerModeEnum.PRINTMODE,
+                               value="HELLOWORLD")
+        db.session.add(st2)
+        db.session.commit()
+
+        self.assertEqual(len(s.transactions), 2)
+        self.assertEqual(s.transactions[0].value, "HELLOWORLD")
+        self.assertEqual(s.transactions[1].value, "FOOBAR123")
+
 
 if __name__ == '__main__':
     unittest.main()

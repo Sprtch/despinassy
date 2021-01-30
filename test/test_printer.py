@@ -80,6 +80,30 @@ class TestDatabasePrinter(unittest.TestCase):
         self.assertEqual(len(p.transactions), 1)
         self.assertEqual(p.transactions[0], pt)
 
+    def test_printer_transaction_order(self):
+        """
+        Verify the order of the 'Printer' table 'transactions' field.
+        The last added transactions should be the first one in the 
+        transaction list.
+        """
+        p = Printer(name="main",
+                    type=1,
+                    dialect=1,
+                    redis="victoria",
+                    settings='{"address": "192.168.0.1"}')
+        db.session.add(p)
+        pt1 = p.add_transaction(origin=IpcOrigin.TEST,
+                               barcode="foo",
+                               name="bar")
+        db.session.add(pt1)
+        pt2 = p.add_transaction(origin=IpcOrigin.TEST,
+                               barcode="hello",
+                               name="world")
+        db.session.add(pt2)
+        db.session.commit()
+        self.assertEqual(len(p.transactions), 2)
+        self.assertEqual(p.transactions[0].name, "world")
+        self.assertEqual(p.transactions[1].name, "bar")
 
 if __name__ == '__main__':
     unittest.main()
