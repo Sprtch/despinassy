@@ -5,14 +5,25 @@ import csv
 import io
 import datetime
 
+class InventorySession(db.Model):
+    __tablename__ = "inventory_session"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    entries = relationship('Inventory', back_populates='session')
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
 class Inventory(db.Model):
     __tablename__ = 'inventory'
+    __table_args__ = (
+        db.UniqueConstraint('part_id', 'session_id'),
+    )
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     quantity = db.Column(db.Integer, default=0)
-    part_id = db.Column(db.Integer, db.ForeignKey('part.id'), unique=True)
+    part_id = db.Column(db.Integer, db.ForeignKey('part.id'))
     part = relationship('Part')
+    session_id = db.Column(db.Integer, db.ForeignKey('session.id'))
+    session = relationship('InventorySession')
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
