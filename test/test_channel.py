@@ -12,16 +12,16 @@ class TestDatabaseChannel(unittest.TestCase):
             'uri': 'sqlite://',
         })
         db.drop_all()
-        db.create_all()
 
     @classmethod
     def tearDownClass(self):
         db.drop_all()
 
+    def setUp(self):
+        db.create_all()
+
     def tearDown(self):
-        Printer.query.delete()
-        Scanner.query.delete()
-        Channel.query.delete()
+        db.drop_all()
 
     def test_same_channel(self):
         p1 = Printer(name="main",
@@ -44,7 +44,7 @@ class TestDatabaseChannel(unittest.TestCase):
         db.session.add(s)
 
         self.assertEqual(Channel.query.count(), 1)
-        self.assertEqual(Scanner.query.count(), 1)
+        self.assertEqual(Scanner.query.count(), 2)
         self.assertEqual(Printer.query.count(), 2)
 
         c = Channel.query.filter(Channel.name == "victoria").first()

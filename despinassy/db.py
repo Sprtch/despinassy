@@ -54,6 +54,17 @@ class Despinassy(SQLAlchemy):
 
         return app
 
+    def create_all(self):
+        from despinassy.Scanner import Scanner, ScannerTypeEnum
+        super().create_all()
+        self.session.add(
+            Scanner(type=ScannerTypeEnum.HURON,
+                    available=True,
+                    name="huron",
+                    settings="{}",
+                    hidden=True))
+        self.session.commit()
+
 
 db = Despinassy()
 
