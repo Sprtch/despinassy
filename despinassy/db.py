@@ -54,6 +54,23 @@ class Despinassy(SQLAlchemy):
 
         return app
 
+    def create_all(self):
+        from despinassy.Scanner import Scanner, ScannerTypeEnum
+        from despinassy.Channel import Channel
+
+        super().create_all()
+        self.session.add(Channel(name="victoria"))
+        self.session.add(
+            Scanner(
+                type=ScannerTypeEnum.HURON,
+                available=True,
+                name="huron",
+                redis="victoria",
+                settings="{}",
+                hidden=True,
+            ))
+        self.session.commit()
+
 
 db = Despinassy()
 

@@ -13,21 +13,12 @@ class TestDatabasePrinter(unittest.TestCase):
             'uri': 'sqlite://',
         })
         db.drop_all()
-        db.create_all()
-
-    @classmethod
-    def tearDownClass(self):
-        db.drop_all()
 
     def setUp(self):
-        c = Channel(name="victoria")
-        db.session.add(c)
-        db.session.commit()
+        db.create_all()
 
     def tearDown(self):
-        Printer.query.delete()
-        Channel.query.delete()
-        PrinterTransaction.query.delete()
+        db.drop_all()
 
     def test_printer_creation(self):
         p = Printer(name="main",
@@ -93,17 +84,18 @@ class TestDatabasePrinter(unittest.TestCase):
                     settings='{"address": "192.168.0.1"}')
         db.session.add(p)
         pt1 = p.add_transaction(origin=IpcOrigin.TEST,
-                               barcode="foo",
-                               name="bar")
+                                barcode="foo",
+                                name="bar")
         db.session.add(pt1)
         pt2 = p.add_transaction(origin=IpcOrigin.TEST,
-                               barcode="hello",
-                               name="world")
+                                barcode="hello",
+                                name="world")
         db.session.add(pt2)
         db.session.commit()
         self.assertEqual(len(p.transactions), 2)
         self.assertEqual(p.transactions[0].name, "world")
         self.assertEqual(p.transactions[1].name, "bar")
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -11,21 +11,12 @@ class TestDatabaseScanner(unittest.TestCase):
             'uri': 'sqlite://',
         })
         db.drop_all()
-        db.create_all()
-
-    @classmethod
-    def tearDownClass(self):
-        db.drop_all()
 
     def setUp(self):
-        c = Channel(name="victoria")
-        db.session.add(c)
-        db.session.commit()
+        db.create_all()
 
     def tearDown(self):
-        Channel.query.delete()
-        Scanner.query.delete()
-        ScannerTransaction.query.delete()
+        db.drop_all()
 
     def test_scanner_creation(self):
         s = Scanner(name="main",
@@ -34,7 +25,7 @@ class TestDatabaseScanner(unittest.TestCase):
                     settings='{}')
         db.session.add(s)
         db.session.commit()
-        self.assertEqual(Scanner.query.count(), 1)
+        self.assertEqual(Scanner.query.count(), 2)
         self.assertEqual(s.type, ScannerTypeEnum.TEST)
         self.assertEqual(Scanner.query.get(s.id), s)
 
@@ -49,17 +40,13 @@ class TestDatabaseScanner(unittest.TestCase):
                                 value="FOOBAR123")
         db.session.add(st)
         db.session.commit()
-        self.assertEqual(Scanner.query.count(), 1)
+        self.assertEqual(Scanner.query.count(), 2)
         self.assertEqual(ScannerTransaction.query.count(), 1)
         self.assertEqual(len(s.transactions), 1)
         self.assertEqual(s.transactions[0], st)
 
     def test_scanner_add_transaction(self):
-        s = Scanner(name="main",
-                    type=ScannerTypeEnum.TEST,
-                    redis="victoria",
-                    settings='{}')
-        db.session.add(s)
+        s = Scanner.query.get(1)
         st = s.add_transaction(mode=ScannerModeEnum.PRINTMODE,
                                value="FOOBAR123")
         db.session.add(st)
@@ -81,10 +68,10 @@ class TestDatabaseScanner(unittest.TestCase):
                     settings='{}')
         db.session.add(s)
         st1 = s.add_transaction(mode=ScannerModeEnum.PRINTMODE,
-                               value="FOOBAR123")
+                                value="FOOBAR123")
         db.session.add(st1)
         st2 = s.add_transaction(mode=ScannerModeEnum.PRINTMODE,
-                               value="HELLOWORLD")
+                                value="HELLOWORLD")
         db.session.add(st2)
         db.session.commit()
 
