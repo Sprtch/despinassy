@@ -6,9 +6,11 @@ from despinassy.Inventory import InventorySession
 class TestDatabaseInventory(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        db.init_app(config={
-            'uri': 'sqlite://',
-        })
+        db.init_app(
+            config={
+                "uri": "sqlite://",
+            }
+        )
         db.drop_all()
         db.create_all()
 
@@ -34,8 +36,7 @@ class TestDatabaseInventory(unittest.TestCase):
         TestDatabaseInventory.inventory_creation("BARCODE", "QWERTY1234")
         self.assertEqual(Inventory.query.count(), 1)
         TestDatabaseInventory.inventory_creation("BARCODE 2", "HELLO1234")
-        self.assertEqual(
-            len(Part.query.filter(Part.barcode == "HELLO1234").all()), 1)
+        self.assertEqual(len(Part.query.filter(Part.barcode == "HELLO1234").all()), 1)
         self.assertEqual(Inventory.query.count(), 2)
 
         p = Part.query.filter(Part.barcode == "QWERTY1234").first()
@@ -46,8 +47,7 @@ class TestDatabaseInventory(unittest.TestCase):
         TestDatabaseInventory.inventory_creation("BARCODE", "QWERTY1234")
         self.assertEqual(Inventory.query.count(), 1)
         TestDatabaseInventory.inventory_creation("BARCODE 2", "HELLO1234")
-        self.assertEqual(
-            len(Part.query.filter(Part.barcode == "HELLO1234").all()), 1)
+        self.assertEqual(len(Part.query.filter(Part.barcode == "HELLO1234").all()), 1)
         self.assertEqual(Inventory.query.count(), 2)
 
         p = Part.query.filter(Part.barcode == "QWERTY1234").first()
@@ -58,8 +58,7 @@ class TestDatabaseInventory(unittest.TestCase):
         TestDatabaseInventory.inventory_creation("BARCODE", "QWERTY1234")
         self.assertEqual(Inventory.query.count(), 1)
         TestDatabaseInventory.inventory_creation("BARCODE 2", "HELLO1234")
-        self.assertEqual(
-            len(Part.query.filter(Part.barcode == "HELLO1234").all()), 1)
+        self.assertEqual(len(Part.query.filter(Part.barcode == "HELLO1234").all()), 1)
         self.assertEqual(Inventory.query.count(), 2)
 
         p = Part.query.filter(Part.barcode == "HELLO1234").first()
@@ -70,8 +69,7 @@ class TestDatabaseInventory(unittest.TestCase):
         TestDatabaseInventory.inventory_creation("BARCODE", "QWERTY1234")
         self.assertEqual(Inventory.query.count(), 1)
         TestDatabaseInventory.inventory_creation("BARCODE 2", "HELLO1234")
-        self.assertEqual(
-            len(Part.query.filter(Part.barcode == "HELLO1234").all()), 1)
+        self.assertEqual(len(Part.query.filter(Part.barcode == "HELLO1234").all()), 1)
         self.assertEqual(Inventory.query.count(), 2)
 
         Inventory.query.delete()
@@ -81,8 +79,7 @@ class TestDatabaseInventory(unittest.TestCase):
         i1 = TestDatabaseInventory.inventory_creation("BARCODE", "QWERTY1234")
         self.assertEqual(Inventory.query.count(), 1)
         i2 = TestDatabaseInventory.inventory_creation("BARCODE 2", "HELLO1234")
-        self.assertEqual(
-            len(Part.query.filter(Part.barcode == "HELLO1234").all()), 1)
+        self.assertEqual(len(Part.query.filter(Part.barcode == "HELLO1234").all()), 1)
         self.assertEqual(Inventory.query.count(), 2)
 
         self.assertEqual(i1.quantity, 0)
@@ -105,12 +102,12 @@ class TestDatabaseInventory(unittest.TestCase):
         result = {
             "id": 1,
             "part": {
-                'id': 1,
-                'barcode': "QWERTY1234",
-                'name': "BARCODE",
-                'counter': 0,
+                "id": 1,
+                "barcode": "QWERTY1234",
+                "name": "BARCODE",
+                "counter": 0,
             },
-            'quantity': 0
+            "quantity": 0,
         }
         i1 = TestDatabaseInventory.inventory_creation("BARCODE", "QWERTY1234")
         self.assertEqual(Inventory.query.count(), 1)
@@ -118,5 +115,5 @@ class TestDatabaseInventory(unittest.TestCase):
         self.assertEqual(i1.to_dict(), result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
