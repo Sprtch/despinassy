@@ -1,5 +1,6 @@
 import unittest
 from despinassy import db, Part, Inventory
+from despinassy.Inventory import InventorySession
 
 
 class TestDatabaseInventory(unittest.TestCase):
@@ -93,6 +94,12 @@ class TestDatabaseInventory(unittest.TestCase):
         self.assertEqual(i2.quantity, 3)
         i1.add(2)
         self.assertEqual(i1.quantity, 3)
+
+    def test_inventory_creation(self):
+        i1 = TestDatabaseInventory.inventory_creation("BARCODE", "QWERTY1234")
+        self.assertEqual(Inventory.query.count(), 1)
+        is1 = InventorySession.query.get(0)
+        self.assertEqual(i1.session, is1)
 
     def test_inventory_to_dict(self):
         result = {

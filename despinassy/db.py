@@ -57,6 +57,7 @@ class Despinassy(SQLAlchemy):
     def create_all(self):
         from despinassy.Scanner import Scanner, ScannerTypeEnum
         from despinassy.Channel import Channel
+        from despinassy.Inventory import InventorySession
 
         super().create_all()
         self.session.add(Channel(name="victoria"))
@@ -69,6 +70,7 @@ class Despinassy(SQLAlchemy):
                 settings="{}",
                 hidden=True,
             ))
+        self.session.add(InventorySession())
         self.session.commit()
 
 
