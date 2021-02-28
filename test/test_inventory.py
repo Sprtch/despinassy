@@ -92,7 +92,7 @@ class TestDatabaseInventory(unittest.TestCase):
         i1.add(2)
         self.assertEqual(i1.quantity, 3)
 
-    def test_inventory_creation(self):
+    def test_inventory_session(self):
         i1 = TestDatabaseInventory.inventory_creation("BARCODE", "QWERTY1234")
         self.assertEqual(Inventory.query.count(), 1)
         is1 = InventorySession.query.get(0)
