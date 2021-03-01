@@ -27,7 +27,7 @@ class Inventory(db.Model):
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
     @validates("session")
-    def validate_redis(self, key, value):
+    def validate_session(self, key, value):
         return InventorySession.query.order_by(
             InventorySession.created_at.desc()
         ).first()
