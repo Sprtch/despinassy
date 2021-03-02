@@ -24,70 +24,74 @@ class ScannerModeEnum(IntEnum):
 
 
 class Scanner(db.Model):
-    __tablename__ = 'scanner'
+    __tablename__ = "scanner"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     type = db.Column(db.Enum(ScannerTypeEnum), nullable=False)
-    mode = db.Column(db.Enum(ScannerModeEnum),
-                     default=ScannerModeEnum.PRINTMODE,
-                     nullable=False)
+    mode = db.Column(
+        db.Enum(ScannerModeEnum), default=ScannerModeEnum.PRINTMODE, nullable=False
+    )
     available = db.Column(db.Boolean)
     name = db.Column(db.String(50), unique=True)
-    redis_id = db.Column(db.Integer, db.ForeignKey('channel.id'))
-    redis = relationship('Channel')
+    redis_id = db.Column(db.Integer, db.ForeignKey("channel.id"))
+    redis = relationship("Channel")
     settings = db.Column(db.JSON)
-    transactions = relationship('ScannerTransaction',
-                                order_by="desc(ScannerTransaction.created_at)",
-                                back_populates='scanner')
+    transactions = relationship(
+        "ScannerTransaction",
+        order_by="desc(ScannerTransaction.created_at)",
+        back_populates="scanner",
+    )
 
     hidden = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
-    @validates('redis')
+    @validates("redis")
     def validate_redis(self, key, value):
-        c = Channel.query.filter(Channel.name == value)
-
-        if c.count():
-            c = c.first()
+        if isinstance(value, str):
+            c = Channel.query.filter_by(name=value).first()
+            if c is None:
+                try:
+                    c = Channel(name=value)
+                    db.session.add(c)
+                    db.session.commit()
+                except IntegrityError:
+                    db.session.rollback()
+                    c = Channel.query.filter(Channel.name == value).first()
+        elif isinstance(value, Channel):
+            c = value
         else:
-            try:
-                c = Channel(name=value)
-                db.session.add(c)
-                db.session.commit()
-            except IntegrityError:
-                db.session.rollback()
-                c = Channel.query.filter(Channel.name == value).first()
+            raise Exception("Not valid redis")
 
         return c
 
     def to_dict(self, full=False):
         if full:
             return {
-                'id': self.id,
-                'type': self.type,
-                'name': self.name,
-                'redis': str(self.redis),
-                'settings': json.loads(self.settings),
-                'mode': self.mode,
-                'available': self.available,
-                'created_at': self.created_at,
-                'updated_at': self.updated_at,
-                'transactions': [t.to_dict() for t in self.transactions],
-                'hidden': self.hidden,
+                "id": self.id,
+                "type": self.type,
+                "name": self.name,
+                "redis": str(self.redis),
+                "settings": json.loads(self.settings),
+                "mode": self.mode,
+                "available": self.available,
+                "created_at": self.created_at,
+                "updated_at": self.updated_at,
+                "transactions": [t.to_dict() for t in self.transactions],
+                "hidden": self.hidden,
             }
         else:
             return {
-                'id': self.id,
-                'type': self.type,
-                'name': self.name,
-                'redis': str(self.redis),
-                'settings': json.loads(self.settings),
-                'mode': self.mode,
-                'available': self.available,
-                'created_at': self.created_at,
-                'updated_at': self.updated_at,
-                'hidden': self.hidden,
+                "id": self.id,
+                "type": self.type,
+                "name": self.name,
+                "redis": str(self.redis),
+                "settings": json.loads(self.settings),
+                "mode": self.mode,
+                "available": self.available,
+                "created_at": self.created_at,
+                "updated_at": self.updated_at,
+                "hidden": self.hidden,
             }
 
     def add_transaction(self, **kwargs):
@@ -97,15 +101,20 @@ class Scanner(db.Model):
 
     def __repr__(self):
         return "<Scanner id=%i type=%i name='%s' redis='%s' settings='%s'>" % (
-            self.id, self.type, self.name, str(self.redis), self.settings)
+            self.id,
+            self.type,
+            self.name,
+            str(self.redis),
+            self.settings,
+        )
 
 
 class ScannerTransaction(db.Model):
-    __tablename__ = 'scanner_transaction'
+    __tablename__ = "scanner_transaction"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    scanner_id = db.Column(db.Integer, db.ForeignKey('scanner.id'))
-    scanner = relationship('Scanner')
+    scanner_id = db.Column(db.Integer, db.ForeignKey("scanner.id"))
+    scanner = relationship("Scanner")
     mode = db.Column(db.Enum(ScannerModeEnum), nullable=False)
     quantity = db.Column(db.Integer, default=1)
     value = db.Column(db.String(50), nullable=False)
@@ -114,18 +123,18 @@ class ScannerTransaction(db.Model):
     def to_dict(self, full=False):
         if full:
             return {
-                'id': self.id,
-                'scanner': self.scanner_id,
-                'mode': int(self.mode),
-                'quantity': self.quantity,
-                'value': self.value,
-                'created_at': self.created_at,
+                "id": self.id,
+                "scanner": self.scanner_id,
+                "mode": int(self.mode),
+                "quantity": self.quantity,
+                "value": self.value,
+                "created_at": self.created_at,
             }
         else:
             return {
-                'id': self.id,
-                'mode': int(self.mode),
-                'quantity': self.quantity,
-                'value': self.value,
-                'created_at': self.created_at,
+                "id": self.id,
+                "mode": int(self.mode),
+                "quantity": self.quantity,
+                "value": self.value,
+                "created_at": self.created_at,
             }

@@ -13,19 +13,20 @@ def setupmethod(f):
 
 class NO_APP:
     extensions = {
-        'sqlalchemy': None,
+        "sqlalchemy": None,
     }
     config = {
-        'SQLALCHEMY_DATABASE_URI': None,
-        'SQLALCHEMY_TRACK_MODIFICATIONS': False,
+        "SQLALCHEMY_DATABASE_URI": None,
+        "SQLALCHEMY_TRACK_MODIFICATIONS": False,
     }
-    root_path = ''
+    root_path = ""
 
     def __init__(self, config={}):
         self.teardown_appcontext_funcs = []
-        self.debug = config.setdefault('debug', False)
-        NO_APP.config['SQLALCHEMY_DATABASE_URI'] = config.setdefault(
-            'uri', 'postgresql://postgres@localhost/sprtch')
+        self.debug = config.setdefault("debug", False)
+        NO_APP.config["SQLALCHEMY_DATABASE_URI"] = config.setdefault(
+            "uri", "postgresql://postgres@localhost/sprtch"
+        )
 
     @setupmethod
     def teardown_appcontext(self, f):
@@ -56,11 +57,9 @@ class Despinassy(SQLAlchemy):
 
     def create_all(self):
         from despinassy.Scanner import Scanner, ScannerTypeEnum
-        from despinassy.Channel import Channel
         from despinassy.Inventory import InventorySession
 
         super().create_all()
-        self.session.add(Channel(name="victoria"))
         self.session.add(
             Scanner(
                 type=ScannerTypeEnum.HURON,
@@ -69,7 +68,8 @@ class Despinassy(SQLAlchemy):
                 redis="victoria",
                 settings="{}",
                 hidden=True,
-            ))
+            )
+        )
         self.session.add(InventorySession())
         self.session.commit()
 
