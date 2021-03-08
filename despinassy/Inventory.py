@@ -13,6 +13,9 @@ class InventorySession(db.Model):
     entries = relationship("Inventory", back_populates="session")
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
+    def to_dict(self):
+        return {"id": self.id, "created_at": self.created_at}
+
 
 class Inventory(db.Model):
     __tablename__ = "inventory"
