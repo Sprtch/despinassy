@@ -26,11 +26,11 @@ class Inventory(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
-    @validates("session")
-    def validate_session(self, key, value):
-        return InventorySession.query.order_by(
+    def __init__(self, **kwargs):
+        kwargs["session"] = InventorySession.query.order_by(
             InventorySession.created_at.desc()
         ).first()
+        super().__init__(**kwargs)
 
     def __repr__(self):
         return "<Inventory id=%i count=%i barcode='%s'>" % (
