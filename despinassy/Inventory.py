@@ -46,7 +46,12 @@ class Inventory(db.Model):
         self.quantity += int(number)
 
     def to_dict(self):
-        return {"id": self.id, "part": self.part.to_dict(), "quantity": self.quantity}
+        return {
+            "id": self.id,
+            "session": self.session_id,
+            "part": self.part.to_dict(),
+            "quantity": self.quantity,
+        }
 
     @staticmethod
     def retrieve_inventory_from_barcode(barcode):
