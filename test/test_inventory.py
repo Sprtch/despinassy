@@ -18,8 +18,11 @@ class TestDatabaseInventory(unittest.TestCase):
         db.drop_all()
 
     def tearDown(self):
+        InventorySession.query.delete()
         Inventory.query.delete()
         Part.query.delete()
+        db.session.add(InventorySession())
+        db.session.commit()
 
     @staticmethod
     def inventory_creation(name, barcode):
@@ -116,6 +119,7 @@ class TestDatabaseInventory(unittest.TestCase):
     def test_inventory_to_dict(self):
         result = {
             "id": 1,
+            "session": 1,
             "part": {
                 "id": 1,
                 "barcode": "QWERTY1234",
