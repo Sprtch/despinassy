@@ -16,7 +16,7 @@ class InventoryUnitEnum(IntEnum):
     def __str__(self):
         if self.value == InventoryUnitEnum.UNDEFINED:
             return "undefined"
-        elif self.value == InventoryUnitEnum.PCS:
+        elif self.value == InventoryUnitEnum.PIECES:
             return "pcs"
         elif self.value == InventoryUnitEnum.METER:
             return "m"
@@ -43,7 +43,7 @@ class Inventory(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     quantity = db.Column(db.Float, default=0)
-    unit = db.Column(db.Enum(InventoryUnitEnum), default=InventoryUnitEnum.PCS)
+    unit = db.Column(db.Enum(InventoryUnitEnum), default=InventoryUnitEnum.PIECES)
     part_id = db.Column(db.Integer, db.ForeignKey("part.id"))
     part = relationship("Part")
     session_id = db.Column(db.Integer, db.ForeignKey("inventory_session.id"))
