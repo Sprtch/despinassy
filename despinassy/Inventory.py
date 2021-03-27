@@ -21,7 +21,7 @@ class Inventory(db.Model):
     __tablename__ = "inventory"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    quantity = db.Column(db.Integer, default=0)
+    quantity = db.Column(db.Float, default=0)
     part_id = db.Column(db.Integer, db.ForeignKey("part.id"))
     part = relationship("Part")
     session_id = db.Column(db.Integer, db.ForeignKey("inventory_session.id"))

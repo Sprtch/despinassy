@@ -8,9 +8,11 @@ import uuid
 class TestCsv(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        db.init_app(config={
-            'uri': 'sqlite://',
-        })
+        db.init_app(
+            config={
+                "uri": "sqlite://",
+            }
+        )
 
     def setUp(self):
         db.create_all()
@@ -44,12 +46,8 @@ class TestCsv(unittest.TestCase):
         Test to import a CSV StringIO in the DB
         """
         self.assertEqual(Part.query.count(), 0)
-        csv = io.StringIO(
-            "default_name,barcode\nhello,world\nfoo,bar\n123,456\n")
-        Part._import_csv_content(csv, {
-            "default_name": "name",
-            "barcode": "barcode"
-        })
+        csv = io.StringIO("default_name,barcode\nhello,world\nfoo,bar\n123,456\n")
+        Part._import_csv_content(csv, {"default_name": "name", "barcode": "barcode"})
         self.assertEqual(Part.query.count(), 3)
         p = Part.query.filter(Part.barcode == "bar").first()
         self.assertEqual(p.name, "foo")
@@ -80,8 +78,7 @@ class TestCsv(unittest.TestCase):
         Test the import of file with empty field that should be passed
         """
         self.assertEqual(Part.query.count(), 0)
-        csv = io.StringIO(
-            "name,barcode\nhello,world\nfoo,\n,456\n,433,\nfoo,bar\n")
+        csv = io.StringIO("name,barcode\nhello,world\nfoo,\n,456\n,433,\nfoo,bar\n")
         Part._import_csv_content(csv)
         self.assertEqual(Part.query.count(), 2)
 
@@ -115,9 +112,10 @@ class TestCsv(unittest.TestCase):
         self.assertEqual(len(output.split("\n")), 2)
         header, content = output.split("\n")
         self.assertEqual(
-            header, "id,part_name,part_barcode,quantity,created_at,updated_at")
-        self.assertTrue("BARCODE,QWERTY1234,0," in content)
+            header, "id,part_name,part_barcode,quantity,created_at,updated_at"
+        )
+        self.assertTrue("BARCODE,QWERTY1234,0.0," in content)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
