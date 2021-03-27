@@ -9,15 +9,15 @@ import datetime
 
 class InventoryUnitEnum(IntEnum):
     UNDEFINED = 0
-    UNIT = 1
+    PIECES = 1
     METER = 2
     SQUARE_METER = 3
 
     def __str__(self):
         if self.value == InventoryUnitEnum.UNDEFINED:
             return "undefined"
-        elif self.value == InventoryUnitEnum.UNIT:
-            return "u"
+        elif self.value == InventoryUnitEnum.PCS:
+            return "pcs"
         elif self.value == InventoryUnitEnum.METER:
             return "m"
         elif self.value == InventoryUnitEnum.SQUARE_METER:
@@ -43,7 +43,7 @@ class Inventory(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     quantity = db.Column(db.Float, default=0)
-    unit = db.Column(db.Enum(InventoryUnitEnum), default=InventoryUnitEnum.UNIT)
+    unit = db.Column(db.Enum(InventoryUnitEnum), default=InventoryUnitEnum.PCS)
     part_id = db.Column(db.Integer, db.ForeignKey("part.id"))
     part = relationship("Part")
     session_id = db.Column(db.Integer, db.ForeignKey("inventory_session.id"))
