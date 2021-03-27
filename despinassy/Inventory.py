@@ -1,9 +1,30 @@
 from despinassy.db import db
 from despinassy.Part import Part
 from sqlalchemy.orm import relationship, validates
+from enum import IntEnum
 import csv
 import io
 import datetime
+
+
+class InventoryUnitEnum(IntEnum):
+    UNDEFINED = 0
+    UNIT = 1
+    METER = 2
+    SQUARE_METER = 3
+
+    def __str__(self):
+        if self.value == InventoryUnitEnum.UNDEFINED:
+            return "undefined"
+        elif self.value == InventoryUnitEnum.UNIT:
+            return "u"
+        elif self.value == InventoryUnitEnum.METER:
+            return "m"
+        elif self.value == InventoryUnitEnum.SQUARE_METER:
+            return "m³"
+
+    def __repr__(self):
+        return str(self)
 
 
 class InventorySession(db.Model):
@@ -22,6 +43,7 @@ class Inventory(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     quantity = db.Column(db.Float, default=0)
+    unit = db.Column(db.Enum(InventoryUnitEnum), default=InventoryUnitEnum.UNIT)
     part_id = db.Column(db.Integer, db.ForeignKey("part.id"))
     part = relationship("Part")
     session_id = db.Column(db.Integer, db.ForeignKey("inventory_session.id"))
