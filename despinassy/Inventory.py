@@ -73,6 +73,7 @@ class Inventory(db.Model):
             "session": self.session_id,
             "part": self.part.to_dict(),
             "quantity": self.quantity,
+            "unit": str(self.unit),
         }
 
     @staticmethod

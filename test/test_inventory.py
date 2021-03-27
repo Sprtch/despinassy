@@ -134,6 +134,7 @@ class TestDatabaseInventory(unittest.TestCase):
                 "counter": 0,
             },
             "quantity": 0,
+            "unit": "u",
         }
         i1 = TestDatabaseInventory.inventory_creation("BARCODE", "QWERTY1234")
         self.assertEqual(Inventory.query.count(), 1)
