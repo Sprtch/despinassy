@@ -116,7 +116,7 @@ class ScannerTransaction(db.Model):
     scanner_id = db.Column(db.Integer, db.ForeignKey("scanner.id"))
     scanner = relationship("Scanner")
     mode = db.Column(db.Enum(ScannerModeEnum), nullable=False)
-    quantity = db.Column(db.Integer, default=1)
+    quantity = db.Column(db.Float, default=1)
     value = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
