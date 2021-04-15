@@ -10,24 +10,24 @@ import os
 
 
 class Part(db.Model):
-    __tablename__ = 'part'
+    __tablename__ = "part"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     barcode = db.Column(db.String(128), unique=True, index=True)
     name = db.Column(db.String(128))
     counter = db.Column(db.Integer, default=0)
-    inventories = relationship('Inventory', back_populates='part')
+    inventories = relationship("Inventory", back_populates="part")
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
-    @validates('barcode')
+    @validates("barcode")
     def validate_barcode(self, key, value):
         max_len = getattr(self.__class__, key).prop.columns[0].type.length
         if value and len(value) > max_len:
             raise ArgumentError('"barcode" value is too long')
         return value
 
-    @validates('name')
+    @validates("name")
     def validate_name(self, key, value):
         max_len = getattr(self.__class__, key).prop.columns[0].type.length
         if value and len(value) > max_len:
@@ -35,24 +35,23 @@ class Part(db.Model):
         return value
 
     def __repr__(self):
-        return '<Part %r:%r>' % (self.name, self.barcode)
+        return "<Part %r:%r>" % (self.name, self.barcode)
 
     def printed(self, number=1):
         self.counter += number
 
     def to_dict(self):
         return {
-            'id': self.id,
-            'barcode': self.barcode,
-            'name': self.name,
-            'counter': self.counter,
+            "id": self.id,
+            "barcode": self.barcode,
+            "name": self.name,
+            "counter": self.counter,
         }
 
     @staticmethod
-    def _import_csv_content(strio: io.TextIOWrapper,
-                            csv_map=None,
-                            delimiter=",",
-                            **kwargs):
+    def _import_csv_content(
+        strio: io.TextIOWrapper, csv_map=None, delimiter=",", **kwargs
+    ):
         csv_reader = csv.DictReader(strio, delimiter=delimiter, **kwargs)
 
         if csv_map is None:
@@ -82,6 +81,5 @@ class Part(db.Model):
         if not os.path.exists(filename):
             raise FileNotFoundError
 
-        with open(filename, mode="r", encoding=encoding,
-                  errors='ignore') as csv_file:
+        with open(filename, mode="r", encoding=encoding, errors="ignore") as csv_file:
             Part._import_csv_content(csv_file, csv_map)
