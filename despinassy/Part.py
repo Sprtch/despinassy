@@ -16,7 +16,9 @@ class Part(db.Model):
     barcode = db.Column(db.String(128), unique=True, index=True)
     name = db.Column(db.String(128))
     counter = db.Column(db.Integer, default=0)
-    inventories = relationship("Inventory", back_populates="part")
+    inventories = relationship(
+        "Inventory", cascade="all, delete", back_populates="part"
+    )
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
