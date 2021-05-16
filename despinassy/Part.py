@@ -17,7 +17,7 @@ class Part(db.Model):
     name = db.Column(db.String(128))
     counter = db.Column(db.Integer, default=0)
     inventories = relationship(
-        "Inventory", cascade="all, delete", back_populates="part"
+        "Inventory", cascade="all, delete-orphan", back_populates="part"
     )
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
@@ -67,7 +67,7 @@ class Part(db.Model):
         for i, row in enumerate(csv_reader):
             args = {}
             for x in csv_map.keys():
-                args[csv_map[x]] = row[x]
+                args[x] = row[csv_map[x]]
 
             if all([args[x] for x in args]):
                 parts.append(args)

@@ -47,7 +47,7 @@ class TestCsv(unittest.TestCase):
         """
         self.assertEqual(Part.query.count(), 0)
         csv = io.StringIO("default_name,barcode\nhello,world\nfoo,bar\n123,456\n")
-        Part._import_csv_content(csv, {"default_name": "name", "barcode": "barcode"})
+        Part._import_csv_content(csv, {"name": "default_name", "barcode": "barcode"})
         self.assertEqual(Part.query.count(), 3)
         p = Part.query.filter(Part.barcode == "bar").first()
         self.assertEqual(p.name, "foo")
