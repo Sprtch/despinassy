@@ -64,7 +64,7 @@ class Part(db.Model):
 
         Part.query.delete()  # Completely remove every entry in Part.
         parts = []
-        for i, row in enumerate(csv_reader):
+        for row in csv_reader:
             args = {}
             for x in csv_map.keys():
                 args[x] = row[csv_map[x]]
