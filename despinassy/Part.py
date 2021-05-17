@@ -67,7 +67,11 @@ class Part(db.Model):
         for row in csv_reader:
             args = {}
             for x in csv_map.keys():
-                args[x] = row[csv_map[x]]
+                max_len = getattr(Part, x).prop.columns[0].type.length
+                content = row[csv_map[x]]
+                if len(content) > max_len:
+                    content = content[:max_len]
+                args[x] = content
 
             if all([args[x] for x in args]):
                 parts.append(args)
