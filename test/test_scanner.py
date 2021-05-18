@@ -1,15 +1,22 @@
 import unittest
 from despinassy import db
-from despinassy.Scanner import Scanner, ScannerTransaction, ScannerTypeEnum, ScannerModeEnum
+from despinassy.Scanner import (
+    Scanner,
+    ScannerTransaction,
+    ScannerTypeEnum,
+    ScannerModeEnum,
+)
 from despinassy.Channel import Channel
 
 
 class TestDatabaseScanner(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        db.init_app(config={
-            'uri': 'sqlite://',
-        })
+        db.init_app(
+            config={
+                "uri": "sqlite://",
+            }
+        )
         db.drop_all()
 
     def setUp(self):
@@ -19,10 +26,9 @@ class TestDatabaseScanner(unittest.TestCase):
         db.drop_all()
 
     def test_scanner_creation(self):
-        s = Scanner(name="main",
-                    type=ScannerTypeEnum.TEST,
-                    redis="victoria",
-                    settings='{}')
+        s = Scanner(
+            name="main", type=ScannerTypeEnum.TEST, redis="victoria", settings="{}"
+        )
         db.session.add(s)
         db.session.commit()
         self.assertEqual(Scanner.query.count(), 2)
@@ -30,14 +36,13 @@ class TestDatabaseScanner(unittest.TestCase):
         self.assertEqual(Scanner.query.get(s.id), s)
 
     def test_scanner_transaction(self):
-        s = Scanner(name="main",
-                    type=ScannerTypeEnum.TEST,
-                    redis="victoria",
-                    settings='{}')
+        s = Scanner(
+            name="main", type=ScannerTypeEnum.TEST, redis="victoria", settings="{}"
+        )
         db.session.add(s)
-        st = ScannerTransaction(scanner=s,
-                                mode=ScannerModeEnum.PRINTMODE,
-                                value="FOOBAR123")
+        st = ScannerTransaction(
+            scanner=s, mode=ScannerModeEnum.PRINTMODE, value="FOOBAR123"
+        )
         db.session.add(st)
         db.session.commit()
         self.assertEqual(Scanner.query.count(), 2)
@@ -47,8 +52,7 @@ class TestDatabaseScanner(unittest.TestCase):
 
     def test_scanner_add_transaction(self):
         s = Scanner.query.get(1)
-        st = s.add_transaction(mode=ScannerModeEnum.PRINTMODE,
-                               value="FOOBAR123")
+        st = s.add_transaction(mode=ScannerModeEnum.PRINTMODE, value="FOOBAR123")
         db.session.add(st)
         db.session.commit()
         self.assertEqual(Scanner.query.count(), 1)
@@ -59,19 +63,16 @@ class TestDatabaseScanner(unittest.TestCase):
     def test_scanner_transaction_order(self):
         """
         Verify the order of the 'Scanner' table 'transactions' field.
-        The last added transactions should be the first one in the 
+        The last added transactions should be the first one in the
         transaction list.
         """
-        s = Scanner(name="main",
-                    type=ScannerTypeEnum.TEST,
-                    redis="victoria",
-                    settings='{}')
+        s = Scanner(
+            name="main", type=ScannerTypeEnum.TEST, redis="victoria", settings="{}"
+        )
         db.session.add(s)
-        st1 = s.add_transaction(mode=ScannerModeEnum.PRINTMODE,
-                                value="FOOBAR123")
+        st1 = s.add_transaction(mode=ScannerModeEnum.PRINTMODE, value="FOOBAR123")
         db.session.add(st1)
-        st2 = s.add_transaction(mode=ScannerModeEnum.PRINTMODE,
-                                value="HELLOWORLD")
+        st2 = s.add_transaction(mode=ScannerModeEnum.PRINTMODE, value="HELLOWORLD")
         db.session.add(st2)
         db.session.commit()
 
@@ -80,5 +81,5 @@ class TestDatabaseScanner(unittest.TestCase):
         self.assertEqual(s.transactions[1].value, "FOOBAR123")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
