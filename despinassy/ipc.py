@@ -11,15 +11,34 @@ class IpcOrigin(IntEnum):
     ERIE = 3
 
 
+class IpcMessageType(IntEnum):
+    UNDEFINED = 0
+    PRINT = 1
+
+
 @dataclasses.dataclass
-class IpcPrintMessage:
-    barcode: str = ""
+class IpcMessage:
+    destination: str = ""
     origin: IpcOrigin = IpcOrigin.UNDEFINED
     device: Optional[str] = None
+    msg_type: IpcMessageType = IpcMessageType.UNDEFINED
+
+    def __post_init__(self):
+        self.origin = IpcOrigin(self.origin)
+        self.msg_type = IpcMessageType(self.msg_type)
+
+    def _asdict(self):
+        return dataclasses.asdict(self)
+
+
+@dataclasses.dataclass
+class IpcPrintMessage(IpcMessage):
+    barcode: str = ""
     name: str = ""
     number: Union[int, float] = 1
 
     def __post_init__(self):
+        self.msg_type = IpcMessageType.PRINT
         self.barcode = str(self.barcode)
         self.origin = IpcOrigin(self.origin)
         self.name = str(self.name)
@@ -32,7 +51,7 @@ class IpcPrintMessage:
 def create_nametuple(target, instance, **kwargs):
     msg_dict = {}
     fields = []
-    if hasattr(target, '_fields'):
+    if hasattr(target, "_fields"):
         fields = target._fields
     else:
         fields = list(map(lambda x: x.name, dataclasses.fields(target)))
@@ -58,7 +77,7 @@ def ipc_create_print_message(instance, **kwargs):
 
 
 def redis_subscribers_num(redis, channel):
-    return redis.execute_command('PUBSUB', 'NUMSUB', channel)[1]
+    return redis.execute_command("PUBSUB", "NUMSUB", channel)[1]
 
 
 def redis_send_to_print(redis, channel, msg: IpcPrintMessage, **kwargs):
