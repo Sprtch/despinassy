@@ -41,13 +41,35 @@ class TestCsv(unittest.TestCase):
         self.assertEqual(p.name, "123")
         self.assertEqual(p.barcode, "456")
 
-    def test_csv_import_2(self):
+    def test_csv_import_with_csv_map_1(self):
         """
         Test to import a CSV StringIO in the DB
         """
         self.assertEqual(Part.query.count(), 0)
         csv = io.StringIO("default_name,barcode\nhello,world\nfoo,bar\n123,456\n")
         Part._import_csv_content(csv, {"name": "default_name", "barcode": "barcode"})
+        self.assertEqual(Part.query.count(), 3)
+        p = Part.query.filter(Part.barcode == "bar").first()
+        self.assertEqual(p.name, "foo")
+        self.assertEqual(p.barcode, "bar")
+        p = Part.query.filter(Part.barcode == "world").first()
+        self.assertEqual(p.name, "hello")
+        self.assertEqual(p.barcode, "world")
+        p = Part.query.filter(Part.barcode == "456").first()
+        self.assertEqual(p.name, "123")
+        self.assertEqual(p.barcode, "456")
+
+    def test_csv_import_with_csv_map_2(self):
+        """
+        Test to import a CSV StringIO in the DB with a CSV map
+        """
+        self.assertEqual(Part.query.count(), 0)
+        csv = io.StringIO(
+            '"Référence interne","Code Barre"\n"hello","world"\n"foo","bar"\n"123","456"\n'
+        )
+        Part._import_csv_content(
+            csv, {"name": "Référence interne", "barcode": "Code Barre"}
+        )
         self.assertEqual(Part.query.count(), 3)
         p = Part.query.filter(Part.barcode == "bar").first()
         self.assertEqual(p.name, "foo")
@@ -69,9 +91,7 @@ class TestCsv(unittest.TestCase):
         self.assertEqual(Part.query.count(), 3)
         csv_content = "name,barcode\nfoo,bar\n123,456\nfoo2,bar2\n324,561\n"
         Part._import_csv_content(io.StringIO(csv_content))
-        self.assertEqual(Part.query.count(), 4)
-        p = Part.query.filter(Part.barcode == "world")
-        self.assertEqual(p.count(), 0)
+        self.assertEqual(Part.query.filter(Part.hidden == False).count(), 4)
 
     def test_csv_import_4(self):
         """
@@ -97,6 +117,19 @@ class TestCsv(unittest.TestCase):
         p = Part.query.get(1)
         self.assertEqual(p.name, name)
         self.assertEqual(p.barcode, barcode)
+
+    def test_csv_re_import(self):
+        """
+        Test to import a CSV StringIO in the DB
+        """
+        self.assertEqual(Part.query.count(), 0)
+        csv1 = io.StringIO("name,barcode\nhello,world\nfoo,bar\n123,456\n")
+        Part._import_csv_content(csv1)
+        self.assertEqual(Part.query.count(), 3)
+        csv2 = io.StringIO("name,barcode\nhello,world\nfoo,bar\n")
+        Part._import_csv_content(csv2)
+        self.assertEqual(Part.query.filter(Part.hidden == False).count(), 2)
+        self.assertEqual(Part.query.count(), 3)
 
     def test_csv_export_1(self):
         BARCODE = "QWERTY1234"

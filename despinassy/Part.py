@@ -3,6 +3,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import inspect
 from sqlalchemy.orm import validates
 from sqlalchemy.exc import ArgumentError
+from sqlalchemy import tuple_
+from sqlalchemy.sql import and_, or_
 import datetime
 import csv
 import io
@@ -21,6 +23,7 @@ class Part(db.Model):
         back_populates="part",
         passive_deletes="ALL",
     )
+    hidden = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
@@ -56,36 +59,81 @@ class Part(db.Model):
     def _import_csv_content(
         strio: io.TextIOWrapper, csv_map=None, delimiter=",", **kwargs
     ):
+        def _get_column_max_len(col):
+            # TODO verify column is of string type
+            return getattr(Part, col).prop.columns[0].type.length
+
+        def _truncate_column_content(column, content):
+            max_len = _get_column_max_len(column)
+            if len(content) > max_len:
+                return content[:max_len]
+            return content
+
         csv_reader = csv.DictReader(strio, delimiter=delimiter, **kwargs)
 
         if csv_map is None:
+            # if no csv_map use the column with matching name.
             csv_map = {}
             for column in inspect(Part).columns.keys():
                 if column in csv_reader.fieldnames:
                     csv_map[column] = column
 
-        Part.query.delete()  # Completely remove every entry in Part.
-        parts = []
-        for row in csv_reader:
-            args = {}
-            for x in csv_map.keys():
-                max_len = getattr(Part, x).prop.columns[0].type.length
-                content = row[csv_map[x]]
-                if len(content) > max_len:
-                    content = content[:max_len]
-                args[x] = content
+        if ("name" not in csv_map) or ("barcode" not in csv_map):
+            # TODO Log error
+            return
 
-            if all([args[x] for x in args]):
-                parts.append(args)
-            else:
-                # Do not import row with empty fields
-                continue
+        # TODO For now only importing 'name' and 'barcode' is supported
+        _col_name = csv_map["name"]
+        _col_barcode = csv_map["barcode"]
+        tuple_parts = {
+            (x[_col_name], x[_col_barcode])
+            for x in csv_reader
+            if x.get(_col_name) and x.get(_col_barcode)
+        }
+
+        # retrieve the 'parts' present in the db and in the '.csv'
+        # cond = tuple_(Part.name, Part.barcode).in_(list(tuple_parts)) # TODO if postgres
+        cond = or_(*(and_(Part.name == x, Part.barcode == y) for (x, y) in tuple_parts))
+        in_db = Part.query.filter(cond)
+        in_db.update({"hidden": False})
+
+        to_remove = Part.query.filter(~cond)
+        to_remove.update({"hidden": True})
+
+        if in_db.count() > 0:
+            # TODO add the part
+            tuple_parts = tuple_parts - {(x.name, x.barcode) for x in in_db.all()}
+
+        parts = [
+            {
+                "name": _truncate_column_content("name", name),
+                "barcode": _truncate_column_content("barcode", barcode),
+            }
+            for (name, barcode) in tuple_parts
+        ]
 
         db.session.bulk_insert_mappings(Part, parts)
         db.session.commit()
 
     @staticmethod
     def import_csv(filename, csv_map=None, encoding="latin1"):
+        """Perform a mass import of a '.csv' file containing parts.
+
+        :param filename: The location of the '.csv' file that containing the
+         parts.  This '.csv' file will be read and should contain a list of
+         parts with a header containing the name of the column.
+
+        :param csv_map: dictionary containing the name of the
+         :class:`despinassy.Part` column as key and the name of the '.csv'
+         header column name as attribute.  This argument is also used to select
+         the column of the '.csv' that will be imported. If no csv_map is
+         provided the function will assume the '.csv' header thath match a
+         column name present in the :class:`despinassy.Part` table will be
+         used.
+
+        :param encoding: The encoding of the filename that will be read.
+         The encoding 'latin1' is used by default.
+        """
         if not os.path.exists(filename):
             raise FileNotFoundError
 
