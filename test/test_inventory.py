@@ -84,6 +84,18 @@ class TestDatabaseInventory(unittest.TestCase):
         Inventory.query.delete()
         self.assertEqual(Inventory.query.count(), 0)
 
+    def test_inventory_cascade(self):
+        TestDatabaseInventory.inventory_creation("BARCODE", "QWERTY1234")
+        self.assertEqual(Inventory.query.count(), 1)
+        TestDatabaseInventory.inventory_creation("BARCODE 2", "HELLO1234")
+        self.assertEqual(len(Part.query.filter(Part.barcode == "HELLO1234").all()), 1)
+        self.assertEqual(len(Part.query.filter(Part.barcode == "QWERTY1234").all()), 1)
+        self.assertEqual(Inventory.query.count(), 2)
+
+        Part.query.delete()
+        self.assertEqual(Part.query.count(), 0)
+        self.assertEqual(Inventory.query.count(), 0)
+
     def test_inventory_quantity(self):
         i1 = TestDatabaseInventory.inventory_creation("BARCODE", "QWERTY1234")
         self.assertEqual(Inventory.query.count(), 1)
