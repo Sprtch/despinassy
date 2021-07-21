@@ -5,13 +5,15 @@ from functools import update_wrapper
 
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
+import psycopg2
 
 
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
-    cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys=ON")
-    cursor.close()
+    if not isinstance(dbapi_connection, psycopg2.extensions.connection):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
 
 
 def setupmethod(f):
