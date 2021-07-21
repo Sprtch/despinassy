@@ -17,7 +17,9 @@ class Part(db.Model):
     name = db.Column(db.String(128))
     counter = db.Column(db.Integer, default=0)
     inventories = relationship(
-        "Inventory", cascade="all, delete-orphan", back_populates="part"
+        "Inventory",
+        back_populates="part",
+        passive_deletes="ALL",
     )
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
