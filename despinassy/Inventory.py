@@ -31,7 +31,7 @@ class InventorySession(db.Model):
     __tablename__ = "inventory_session"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    entries = relationship("Inventory", back_populates="session")
+    entries = relationship("Inventory", back_populates="session", passive_deletes="ALL")
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def to_dict(self):
@@ -44,9 +44,11 @@ class Inventory(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     quantity = db.Column(db.Float, default=0)
     unit = db.Column(db.Enum(InventoryUnitEnum), default=InventoryUnitEnum.PIECES)
-    part_id = db.Column(db.Integer, db.ForeignKey("part.id"))
+    part_id = db.Column(db.Integer, db.ForeignKey("part.id", ondelete="CASCADE"))
     part = relationship("Part")
-    session_id = db.Column(db.Integer, db.ForeignKey("inventory_session.id"))
+    session_id = db.Column(
+        db.Integer, db.ForeignKey("inventory_session.id", ondelete="CASCADE")
+    )
     session = relationship("InventorySession")
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
