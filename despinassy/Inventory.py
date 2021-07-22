@@ -28,10 +28,26 @@ class InventoryUnitEnum(IntEnum):
 
 
 class InventorySession(db.Model):
+    """
+    InventorySession is the representation of inventory at a certain moment.
+
+    Typically inventories at warehouse are done at regular intervals. During
+    an inventory session the current stock for each part in the warehouse get
+    logged. Those inventory sessions are used to re-count the stock in case
+    some stock movement didn't get logged in the system correctly.
+
+    The creation of a new InventorySession will restart all the previous
+    inventory listing done in the past but not delete them.
+    New Inventory are always associated to the most recent InventorySession.
+    """
+
     __tablename__ = "inventory_session"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
     entries = relationship("Inventory", back_populates="session", passive_deletes="ALL")
+    """List of every inventory entry related to the session."""
+
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def to_dict(self):
@@ -39,17 +55,34 @@ class InventorySession(db.Model):
 
 
 class Inventory(db.Model):
+    """
+    The Inventory model code associate a number and a unit to an existing
+    :class:`despinassy.Part`.
+
+    Inventory represent the current stock of a :class:`despinassy.Part` at
+    a given time.
+    """
+
     __tablename__ = "inventory"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
     quantity = db.Column(db.Float, default=0)
+    """Current quantity of a :class:`despinassy.Part` in stock"""
+
     unit = db.Column(db.Enum(InventoryUnitEnum), default=InventoryUnitEnum.PIECES)
+    """The unit of quantity"""
+
     part_id = db.Column(db.Integer, db.ForeignKey("part.id", ondelete="CASCADE"))
     part = relationship("Part")
+    """Part associated with this inventory entry"""
+
     session_id = db.Column(
         db.Integer, db.ForeignKey("inventory_session.id", ondelete="CASCADE")
     )
     session = relationship("InventorySession")
+    """Session associated with this inventory entry"""
+
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
@@ -117,5 +150,9 @@ class Inventory(db.Model):
 
     @staticmethod
     def export_csv(path):
+        """Export the inventory entries to a '.csv' file
+
+        :param path: The location of the '.csv' file to save
+        """
         with open(path, "w") as csvfile:
             csvfile.write(Inventory._export_csv().getvalue())

@@ -12,18 +12,50 @@ import os
 
 
 class Part(db.Model):
+    """
+        The `Part` model code.
+
+        Each part get associated with a unique `barcode` and a familiar `name`.
+    k"""
+
     __tablename__ = "part"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
     barcode = db.Column(db.String(128), unique=True, index=True)
+    """Unique barcode representation of the part"""
+
     name = db.Column(db.String(128))
+    """Familiar name of the part"""
+
     counter = db.Column(db.Integer, default=0)
+    """Count of the number of time the `Part` has been printed"""
+
     inventories = relationship(
         "Inventory",
         back_populates="part",
         passive_deletes="ALL",
     )
+    """
+    List of related inventory entries for this part.
+    See :class:`despinassy.Inventory` for more information about inventory.
+
+    More than one entry can exist for the same part for different
+    :class:`despinassy.InventorySession`.
+    """
+
     hidden = db.Column(db.Boolean, default=False)
+    """
+    Is the part hidden.
+
+    This is used to differentiate the currently in use parts from the one that
+    got deleted without having to delete the :class:`despinassy.Inventory`
+    entry related to this part.
+
+    This boolean value allow API to list all the existing non hidden parts
+    easily.
+    """
+
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
