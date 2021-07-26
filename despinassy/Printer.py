@@ -92,6 +92,7 @@ class Printer(db.Model):
 
     redis_id = db.Column(db.Integer, db.ForeignKey("channel.id"))
     redis = relationship("Channel")
+    """Channel the printer listen for incoming message"""
 
     settings = db.Column(db.JSON)
     """Settings dependant on printer type"""
