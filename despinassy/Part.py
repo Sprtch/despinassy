@@ -13,10 +13,10 @@ import os
 
 class Part(db.Model):
     """
-        The `Part` model code.
+    The `Part` model code.
 
-        Each part get associated with a unique `barcode` and a familiar `name`.
-    k"""
+    Each part get associated with a unique `barcode` and a familiar `name`.
+    """
 
     __tablename__ = "part"
 
