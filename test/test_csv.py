@@ -145,7 +145,7 @@ class TestCsv(unittest.TestCase):
         self.assertEqual(len(output.split("\n")), 2)
         header, content = output.split("\n")
         self.assertEqual(
-            header, "id,part_name,part_barcode,quantity,created_at,updated_at"
+            header, "id,part_name,part_barcode,quantity,unit,created_at,updated_at"
         )
         self.assertTrue("BARCODE,QWERTY1234,0.0," in content)
 
@@ -167,9 +167,6 @@ class TestCsv(unittest.TestCase):
         output = Inventory._export_csv().getvalue().strip()
         self.assertEqual(len(output.split("\n")), 2)
         header, content = output.split("\n")
-        self.assertEqual(
-            header, "id,part_name,part_barcode,quantity,created_at,updated_at"
-        )
         self.assertTrue("BARCODE,QWERTY1234,2.0," in content)
 
 
