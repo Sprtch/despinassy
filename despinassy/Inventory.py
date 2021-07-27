@@ -74,6 +74,8 @@ class Inventory(db.Model):
 
     __tablename__ = "inventory"
 
+    __table_args__ = (db.UniqueConstraint("part_id", "session_id"),)
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     quantity = db.Column(db.Float, default=0)
@@ -128,7 +130,7 @@ class Inventory(db.Model):
         Return the inventory entries from the last session.
         """
         last_session = InventorySession.last()
-        return Inventory.query.filter(Inventory.session == last_session).all()
+        return Inventory.query.filter(Inventory.session == last_session)
 
     @staticmethod
     def archive():
@@ -165,7 +167,7 @@ class Inventory(db.Model):
         )
         writer.writeheader()
 
-        for i in Inventory.last_session_entries():
+        for i in Inventory.last_session_entries().all():
             row = {
                 "id": i.id,
                 "part_name": i.part.name,
