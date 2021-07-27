@@ -50,6 +50,15 @@ class InventorySession(db.Model):
 
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
+    @staticmethod
+    def last():
+        """
+        Return the last session added to the database.
+        """
+        return InventorySession.query.order_by(
+            InventorySession.created_at.desc()
+        ).first()
+
     def to_dict(self):
         return {"id": self.id, "created_at": self.created_at}
 
@@ -112,6 +121,23 @@ class Inventory(db.Model):
         }
 
     @staticmethod
+    def last_session_entries():
+        """
+        Return the inventory entries from the last session.
+        """
+        last_session = InventorySession.last()
+        return Inventory.query.filter(Inventory.session == last_session).all()
+
+    @staticmethod
+    def archive():
+        """
+        Archive the current inventory by creating a new
+        :class:`despinassy.inventory.InventorySession`.
+        """
+        db.session.add(InventorySession())
+        db.session.commit()
+
+    @staticmethod
     def retrieve_inventory_from_barcode(barcode):
         return (
             db.session.query(Inventory)
@@ -128,6 +154,7 @@ class Inventory(db.Model):
             "part_name",
             "part_barcode",
             "quantity",
+            "unit",
             "created_at",
             "updated_at",
         ]
@@ -135,12 +162,14 @@ class Inventory(db.Model):
             strio, fieldnames=columns, delimiter=delimiter, lineterminator="\n"
         )
         writer.writeheader()
-        for i in Inventory.query.all():
+
+        for i in Inventory.last_session_entries():
             row = {
                 "id": i.id,
                 "part_name": i.part.name,
                 "part_barcode": i.part.barcode,
                 "quantity": i.quantity,
+                "unit": i.unit,
                 "created_at": str(i.created_at),
                 "updated_at": str(i.updated_at),
             }

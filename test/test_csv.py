@@ -149,6 +149,29 @@ class TestCsv(unittest.TestCase):
         )
         self.assertTrue("BARCODE,QWERTY1234,0.0," in content)
 
+    def test_csv_export_2(self):
+        BARCODE = "QWERTY1234"
+        NAME = "BARCODE"
+        p = Part(name=NAME, barcode=BARCODE)
+        db.session.add(p)
+        i = Inventory(part=p)
+        db.session.add(i)
+        db.session.commit()
+
+        self.assertEqual(Inventory.query.count(), 1)
+        Inventory.archive()
+        i = Inventory(part=p, quantity=2)
+        db.session.add(i)
+        db.session.commit()
+        self.assertEqual(Inventory.query.count(), 2)
+        output = Inventory._export_csv().getvalue().strip()
+        self.assertEqual(len(output.split("\n")), 2)
+        header, content = output.split("\n")
+        self.assertEqual(
+            header, "id,part_name,part_barcode,quantity,created_at,updated_at"
+        )
+        self.assertTrue("BARCODE,QWERTY1234,2.0," in content)
+
 
 if __name__ == "__main__":
     unittest.main()
