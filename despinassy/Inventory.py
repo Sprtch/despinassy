@@ -93,7 +93,9 @@ class Inventory(db.Model):
     """Session associated with this inventory entry"""
 
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
+    updated_at = db.Column(
+        db.DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    )
 
     def __init__(self, **kwargs):
         kwargs["session"] = InventorySession.query.order_by(
