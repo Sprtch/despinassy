@@ -25,7 +25,7 @@ class Part(db.Model):
     barcode = db.Column(db.String(128), unique=True, index=True)
     """Unique barcode representation of the part"""
 
-    name = db.Column(db.String(128))
+    name = db.Column(db.String(256))
     """Familiar name of the part"""
 
     counter = db.Column(db.Integer, default=0)
